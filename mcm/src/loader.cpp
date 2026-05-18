@@ -58,7 +58,7 @@ YAML::Node load_skill_root(const std::string& raw_key) {
     std::vector<std::string> candidates;
 
     if (!normalized_key.empty()) {
-        candidates.push_back(data_dir + normalized_key + "_skills.yaml");
+        candidates.push_back(data_dir + normalized_key + ".yaml");
     }
     candidates.push_back(data_dir + "default_skills.yaml");
 
@@ -249,7 +249,9 @@ bool LogLoader::load_nexon_json_from_string(
 
     const YAML::Node metadata = skill_root ? skill_root["metadata"] : YAML::Node();
     const YAML::Node main_stat_type = metadata ? metadata["main_stat_type"] : YAML::Node();
-    const YAML::Node weapon_constant = metadata ? metadata["weapon_constant"] : YAML::Node();
+    const YAML::Node base_specs = skill_root ? skill_root["base_specs"] : YAML::Node();
+    const YAML::Node weapon = base_specs ? base_specs["weapon"] : YAML::Node();
+    const YAML::Node weapon_constant = weapon ? weapon["constant"] : YAML::Node();
     mcc_char_info->set_main_stat_type(parse_main_stat_type(main_stat_type, *mcc_stat));
     mcc_char_info->set_weapon_constant(parse_weapon_constant(weapon_constant));
 
