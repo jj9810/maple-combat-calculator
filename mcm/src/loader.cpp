@@ -33,6 +33,29 @@ struct SkillInfo {
 namespace {
 
 std::string normalize_data_key(const std::string& value) {
+    // 1. 외부 YAML 매핑 파일 로드 시도
+    static std::map<std::string, std::string> mapping_cache;
+    static bool loaded = false;
+
+    if (!loaded) {
+        try {
+            YAML::Node mapping_root = YAML::LoadFile("shared/data/classes/class_mapping.yaml");
+            if (mapping_root["mappings"]) {
+                for (auto it = mapping_root["mappings"].begin(); it != mapping_root["mappings"].end(); ++it) {
+                    mapping_cache[it->first.as<std::string>()] = it->second.as<std::string>();
+                }
+            }
+            loaded = true;
+        } catch (...) {
+            std::cerr << "Warning: Failed to load class_mapping.yaml" << std::endl;
+        }
+    }
+
+    if (auto it = mapping_cache.find(value); it != mapping_cache.end()) {
+        return it->second;
+    }
+
+    // 2. 일반적인 정규화 (영어 이름 등)
     std::string key;
     bool previous_separator = false;
 

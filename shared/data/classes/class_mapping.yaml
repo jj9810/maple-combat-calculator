@@ -1,0 +1,83 @@
+# MapleStory Class Name Mapping (Korean -> English/Key)
+# English transliterations are prioritized if the Korean name is an English loanword.
+# Sorted by faction.
+
+mappings:
+  # --- Explorer (모험가) ---
+  "초보자": "beginner"
+  "히어로": "hero"
+  "팔라딘": "paladin"
+  "다크나이트": "dark_knight"
+  "아크메이지(불,독)": "archmage_fb"
+  "아크메이지(썬,콜)": "archmage_tc"
+  "비숍": "bishop"
+  "보우마스터": "bowmaster"
+  "신궁": "marksman"
+  "패스파인더": "pathfinder"
+  "나이트로드": "night_lord"
+  "섀도어": "shadower"
+  "듀얼블레이드": "dual_blade"
+  "바이퍼": "viper"
+  "캡틴": "captain"
+  "캐논슈터": "cannon_shooter"
+
+  # --- Cygnus Knights (시그너스 기사단) ---
+  "노블레스": "noblesse"
+  "소울마스터": "soul_master"
+  "플레임위자드": "flame_wizard"
+  "윈드브레이커": "wind_breaker"
+  "나이트워커": "night_walker"
+  "스트라이커": "striker"
+  "미하일": "mihile"
+
+  # --- Heroes (영웅) ---
+  "아란": "aran"
+  "에반": "evan"
+  "루미너스": "luminous"
+  "메르세데스": "mercedes"
+  "팬텀": "phantom"
+  "은월": "shade"
+
+  # --- Demon (데몬) ---
+  "데몬슬레이어": "demon_slayer"
+  "데몬어벤져": "demon_avenger"
+
+  # --- Resistance (레지스탕스) ---
+  "시티즌": "citizen"
+  "블래스터": "blaster"
+  "배틀메이지": "battle_mage"
+  "와일드헌터": "wild_hunter"
+  "메카닉": "mechanic"
+  "제논": "xenon"
+
+  # --- Nova (노바) ---
+  "카이저": "kaiser"
+  "카인": "kain"
+  "카데나": "cadena"
+  "엔젤릭버스터": "angelic_buster"
+
+  # --- Transcendent (초월자) ---
+  "제로": "zero"
+
+  # --- Friends World (프렌즈 월드) ---
+  "키네시스": "kinesis"
+
+  # --- Lef (레프) ---
+  "아델": "adele"
+  "일리움": "illium"
+  "칼리": "khali"
+  "아크": "ark"
+
+  # --- Anima (아니마) ---
+  "렌": "ren"
+  "라라": "lara"
+  "호영": "hoyoung"
+
+  # --- Overseas / Maple M Exclusive (해외·메이플M 전용) ---
+  "하야토": "hayato"
+  "칸나": "kanna"
+  "린": "lynn"
+  "묵현": "mo_xuan"
+  "에릴 라이트": "eril_light"
+  "시아 아스텔": "sia_astel"
+  "아이엘": "aiel"
