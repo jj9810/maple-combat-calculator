@@ -1,4 +1,7 @@
 # 아델(Adele) 전체 스킬 데이터 - 다단계 액션 구조 및 모든 스킬 복구 완료
+metadata:
+  main_stat_type: "STR"
+  weapon_constant: 1.3
 class: "Adele"
 skills:
   # --- 주요 공격기 및 4차/HEXA 강화 (마스터리 코어) ---

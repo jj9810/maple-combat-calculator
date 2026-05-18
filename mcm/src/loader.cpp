@@ -8,6 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <vector>
+#include <cctype>
 
 namespace mcm {
 
@@ -28,6 +29,84 @@ struct SkillInfo {
     };
     std::vector<Action> actions;
 };
+
+namespace {
+
+std::string normalize_data_key(const std::string& value) {
+    std::string key;
+    bool previous_separator = false;
+
+    for (unsigned char ch : value) {
+        if (std::isalnum(ch)) {
+            key.push_back(static_cast<char>(std::tolower(ch)));
+            previous_separator = false;
+        } else if (!previous_separator && !key.empty()) {
+            key.push_back('_');
+            previous_separator = true;
+        }
+    }
+
+    if (!key.empty() && key.back() == '_') {
+        key.pop_back();
+    }
+    return key;
+}
+
+YAML::Node load_skill_root(const std::string& raw_key) {
+    const std::string data_dir = "shared/data/classes/";
+    const std::string normalized_key = normalize_data_key(raw_key);
+    std::vector<std::string> candidates;
+
+    if (!normalized_key.empty()) {
+        candidates.push_back(data_dir + normalized_key + "_skills.yaml");
+    }
+    candidates.push_back(data_dir + "default_skills.yaml");
+
+    for (const auto& path : candidates) {
+        try {
+            return YAML::LoadFile(path);
+        } catch (const YAML::BadFile&) {
+        }
+    }
+
+    throw YAML::BadFile("No skill data file found");
+}
+
+int parse_main_stat_type(const YAML::Node& node, const maple_combat_calculator::shared::MCCStat& stat) {
+    if (node) {
+        if (node.IsScalar()) {
+            const std::string value = node.as<std::string>();
+            if (value == "STR") return 1;
+            if (value == "DEX") return 2;
+            if (value == "INT") return 3;
+            if (value == "LUK") return 4;
+            if (value == "LUK_SECONDARY") return 5;
+            if (value == "ALL") return 6;
+            if (value == "HP") return 7;
+            try {
+                return node.as<int>();
+            } catch (...) {
+            }
+        }
+    }
+
+    std::vector<std::pair<double, int>> stat_types = {
+        {stat.str(), 1},
+        {stat.dex(), 2},
+        {stat.int_(), 3},
+        {stat.luk(), 4},
+    };
+    return std::max_element(stat_types.begin(), stat_types.end())->second;
+}
+
+double parse_weapon_constant(const YAML::Node& node) {
+    if (!node) {
+        return 1.0;
+    }
+    return node.as<double>(1.0);
+}
+
+} // namespace
 
 bool LogLoader::load(const std::string& filepath, maple_combat_calculator::shared::CombatLog& combat_log) {
     std::ifstream input(filepath, std::ios::binary);
@@ -78,10 +157,16 @@ bool LogLoader::load_nexon_json_from_string(
     if (!json_to_proto(char_json, char_info)) return false;
     if (!json_to_proto(timeline_json, timeline)) return false;
 
-    // 1. 스킬 데이터베이스 로드 (Adele 고정 - 추후 확장)
-    std::map<std::string, SkillInfo> skill_db;
+    YAML::Node skill_root;
     try {
-        YAML::Node skill_root = YAML::LoadFile("shared/data/classes/adele_skills.yaml");
+        skill_root = load_skill_root(char_info.basic_object().character_class());
+    } catch (...) {
+        std::cerr << "Warning: Failed to load skill database." << std::endl;
+    }
+
+    // 1. 스킬 데이터베이스 로드
+    std::map<std::string, SkillInfo> skill_db;
+    if (skill_root && skill_root["skills"]) {
         for (auto s_node : skill_root["skills"]) {
             SkillInfo si;
             si.name = s_node["name"].as<std::string>();
@@ -134,16 +219,12 @@ bool LogLoader::load_nexon_json_from_string(
                 }
             }
         }
-    } catch (...) {
-        std::cerr << "Warning: Failed to load skill database." << std::endl;
     }
 
     // 2. CombatLog 기본 정보 설정
     *combat_log.mutable_raw_character_info() = char_info;
     auto* mcc_char_info = combat_log.mutable_character_info();
     mcc_char_info->set_level(char_info.basic_object().character_level());
-    mcc_char_info->set_main_stat_type(1); // Adele STR
-    mcc_char_info->set_weapon_constant(1.3);
 
     auto* mcc_stat = combat_log.mutable_base_stat()->mutable_stat();
     for (const auto& stat : char_info.stat_object().basic_stat_object().final_stat()) {
@@ -165,6 +246,12 @@ bool LogLoader::load_nexon_json_from_string(
             else if (name == "무기 숙련도") mcc_stat->set_mastery(val);
         } catch (...) {}
     }
+
+    const YAML::Node metadata = skill_root ? skill_root["metadata"] : YAML::Node();
+    const YAML::Node main_stat_type = metadata ? metadata["main_stat_type"] : YAML::Node();
+    const YAML::Node weapon_constant = metadata ? metadata["weapon_constant"] : YAML::Node();
+    mcc_char_info->set_main_stat_type(parse_main_stat_type(main_stat_type, *mcc_stat));
+    mcc_char_info->set_weapon_constant(parse_weapon_constant(weapon_constant));
 
     auto* mcc_mob_info = combat_log.mutable_monster_info();
     try {
