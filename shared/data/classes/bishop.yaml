@@ -1,0 +1,228 @@
+metadata:
+  class: "비숍"
+  main_stat_type: "INT"
+  source:
+    name: "namu_wiki"
+    checked_date: "2026-05-21"
+
+base_specs:
+  weapon:
+    type: "스태프/완드"
+    constant: 1.2
+    mastery: 70 # 보우 엑스퍼트와 유사한 엑스퍼트 계열
+  attack:
+    main_stat:
+      type: "INT"
+    ignore_defense:
+      base: 20  # 아케인 에임
+    damage:
+      base: 40  # 아케인 에임 중첩 등 (기본 0, 중첩시 최대 40)
+  critical:
+    chance: 75  # 기본(5) + 매직 크리티컬(30) + 홀리 포커스(40)
+    damage: 15  # 샤프 아이즈(기본 궁수 공용이지만 비숍도 보유)
+
+skills:
+  # --- 1차 ~ 3차 ---
+  - name: "EnergyBolt"
+    display_name: "에너지 볼트"
+    type: "attack"
+    actions:
+      - damage: 78
+        hit: 4
+
+  - name: "HolyArrow"
+    display_name: "홀리 애로우"
+    type: "attack"
+    actions:
+      - damage: 185
+        hit: 3
+
+  - name: "ShiningRay"
+    display_name: "샤이닝 레이"
+    type: "attack"
+    actions:
+      - damage: 254
+        hit: 4
+
+  # --- 4차 ---
+  - name: "AngelRay"
+    display_name: "엔젤레이"
+    type: "attack"
+    actions:
+      - damage: 225
+        hit: 14
+
+  - name: "Genesis"
+    display_name: "제네시스"
+    type: "attack"
+    cooldown: 30.0
+    actions:
+      - damage: 324
+        hit: 10
+
+  - name: "BigBang"
+    display_name: "빅뱅"
+    type: "attack"
+    actions:
+      - damage: 480
+        hit: 4
+
+  - name: "Bahamut"
+    display_name: "바하뮤트"
+    type: "summon"
+    duration: 600.0
+    actions:
+      - damage: 170
+        hit: 3
+
+  - name: "Infinity"
+    display_name: "인피니티"
+    type: "buff"
+    effects:
+      final_damage: 91 # 30레벨 기준 최대 기대치
+
+  # --- 하이퍼 ---
+  - name: "HeavensDoor"
+    display_name: "헤븐즈 도어"
+    type: "attack"
+    cooldown: 180.0
+    actions:
+      - damage: 670
+        hit: 8
+
+  # --- 5차 ---
+  - name: "Pray"
+    display_name: "프레이"
+    type: "buff"
+    duration: 30.0
+    cooldown: 120.0
+    effects:
+      final_damage: 33 # 30레벨 기준 본인 한정 (파티원 별도)
+
+  - name: "AngelOfLibra"
+    display_name: "엔젤 오브 리브라 (복수)"
+    type: "summon"
+    duration: 30.0
+    cooldown: 120.0
+    actions:
+      - damage: 1100
+        hit: 10
+
+  - name: "Peacemaker"
+    display_name: "피스메이커"
+    type: "attack"
+    cooldown: 10.0
+    actions:
+      - name: "contact"
+        damage: 770
+        hit: 4
+      - name: "holy_light"
+        damage: 770
+        hit: 12
+
+  - name: "DivinePunishment"
+    display_name: "디바인 퍼니시먼트"
+    type: "attack"
+    cooldown: 1.5
+    actions:
+      - damage: 715
+        hit: 10
+        repeat: 10 # 1초당 1개 소모, 최대 10초(대략)
+
+  - name: "ArcanaOverride"
+    display_name: "아르카나 오버라이드"
+    type: "buff"
+    duration: 70.0
+    cooldown: 120.0
+    effects:
+      final_damage: 21 # 1단계 (15초)
+
+  # --- 6차 ---
+  - name: "AngelRayVI"
+    display_name: "엔젤레이 VI"
+    type: "attack"
+    actions:
+      - name: "holy_sword"
+        damage: 334
+        hit: 14
+      - name: "angel_of_judgment"
+        damage: 822
+        hit: 10
+        interval: 12 # 12회 적중 시
+    hexa_upgrade:
+      origin_name: "AngelRay"
+
+  - name: "BigBangVI"
+    display_name: "빅뱅 VI"
+    type: "attack"
+    actions:
+      - damage: 820
+        hit: 4
+    hexa_upgrade:
+      origin_name: "BigBang"
+
+  - name: "HolyExplosionVI"
+    display_name: "신성 폭발 (빅뱅 VI)"
+    type: "attack"
+    cooldown: 6.0
+    actions:
+      - damage: 715
+        hit: 6
+
+  - name: "TriumphFeatherVI"
+    display_name: "트라이엄프 페더 VI"
+    type: "attack"
+    cooldown: 3.0
+    actions:
+      - damage: 684
+        hit: 4
+        repeat: 6
+
+  - name: "GenesisVI"
+    display_name: "제네시스 VI"
+    type: "attack"
+    cooldown: 30.0
+    actions:
+      - damage: 990
+        hit: 10
+    hexa_upgrade:
+      origin_name: "Genesis"
+
+  - name: "HolyAdvent"
+    display_name: "홀리 어드밴트"
+    type: "origin"
+    cooldown: 360.0
+    actions:
+      - name: "slash_1"
+        damage: 570
+        hit: 8
+        repeat: 25
+      - name: "slash_2"
+        damage: 475
+        hit: 12
+        repeat: 35
+      - name: "archangel_balance"
+        damage: 515
+        hit: 14
+        repeat: 20 # 60초간 3초 주기
+      - name: "archangel_revenge"
+        damage: 500
+        hit: 12
+        repeat: 12 # 60초간 5초 주기
+      - name: "archangel_mercy"
+        damage: 600
+        hit: 12
+        repeat: 15 # 60초간 4초 주기
+
+  - name: "CommandOfHeaven"
+    display_name: "커맨드 오브 헤븐"
+    type: "attack"
+    actions:
+      - name: "light"
+        damage: 3996
+        hit: 12
+        repeat: 14
+      - name: "punishment"
+        damage: 4928
+        hit: 15
+        repeat: 13

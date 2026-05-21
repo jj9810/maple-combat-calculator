@@ -1,0 +1,245 @@
+metadata:
+  class: "듀얼블레이드"
+  main_stat_type: "LUK_SECONDARY"
+  source:
+    name: "namu_wiki"
+    checked_date: "2026-05-21"
+
+base_specs:
+  weapon:
+    type: "단검/블레이드"
+    constant: 1.3
+    mastery: 70 # 이도류 엑스퍼트
+  attack:
+    main_stat:
+      type: "LUK"
+    final_damage:
+      base: 20  # 이도류 엑스퍼트 (파이널 컷은 버프형이므로 스킬에 별도 표기 가능)
+    ignore_defense:
+      base: 0   # 스킬별 상이 (블퓨 20, 팬블 30)
+  critical:
+    chance: 40  # 기본(5) + 샤프니스(35) (섀도우 이베이젼 제외)
+    damage: 15  # 샤프니스
+
+skills:
+  # --- 1차 ~ 3차 ---
+  - name: "SharpSlash"
+    display_name: "샤프 슬래시"
+    type: "attack"
+    actions:
+      - damage: 90
+        hit: 3
+
+  - name: "FatalBlow"
+    display_name: "페이탈 블로우"
+    type: "attack"
+    actions:
+      - damage: 108
+        hit: 7
+
+  - name: "SlashStorm"
+    display_name: "슬래시 스톰"
+    type: "attack"
+    actions:
+      - damage: 220 # 강화 기준
+        hit: 3
+
+  - name: "BladeAscension"
+    display_name: "블레이드 어센션"
+    type: "attack"
+    actions:
+      - damage: 175
+        hit: 3
+
+  - name: "ChainHell"
+    display_name: "사슬지옥"
+    type: "attack"
+    actions:
+      - damage: 150
+        hit: 8 # 1회 + 7회 연타
+
+  # --- 4차 ---
+  - name: "BladeFury"
+    display_name: "블레이드 퓨리"
+    type: "attack"
+    actions:
+      - damage: 250
+        hit: 5
+
+  - name: "PhantomBlow"
+    display_name: "팬텀 블로우"
+    type: "attack"
+    actions:
+      - damage: 330
+        hit: 6
+
+  - name: "FinalCut"
+    display_name: "파이널 컷"
+    type: "attack"
+    cooldown: 90.0
+    actions:
+      - damage: 2000
+        hit: 1
+
+  - name: "SuddenRaid"
+    display_name: "써든레이드"
+    type: "attack"
+    cooldown: 30.0
+    actions:
+      - damage: 494
+        hit: 7
+
+  # --- 하이퍼 ---
+  - name: "Asura"
+    display_name: "아수라"
+    type: "attack"
+    cooldown: 60.0
+    actions:
+      - damage: 420
+        hit: 4
+        repeat: 40 # 약 40~50회 타격
+
+  # --- 5차 ---
+  - name: "BladeStorm"
+    display_name: "블레이드 스톰"
+    type: "attack"
+    cooldown: 90.0
+    actions:
+      - name: "initial"
+        damage: 1270
+        hit: 7
+      - name: "rapid"
+        damage: 570
+        hit: 7
+        repeat: 42
+
+  - name: "KarmaFury"
+    display_name: "카르마 퓨리"
+    type: "attack"
+    cooldown: 10.0
+    actions:
+      - damage: 880
+        hit: 7
+        repeat: 5
+
+  - name: "BladeTornado"
+    display_name: "블레이드 토네이도"
+    type: "attack"
+    cooldown: 12.0
+    actions:
+      - name: "spin"
+        damage: 1320
+        hit: 7
+      - name: "storm"
+        damage: 880
+        hit: 6
+        repeat: 6
+
+  - name: "HauntedEdgeSura"
+    display_name: "헌티드 엣지 (수라)"
+    type: "attack"
+    cooldown: 12.0
+    actions:
+      - name: "strike"
+        damage: 1045
+        hit: 6
+      - name: "storm"
+        damage: 1100
+        hit: 3
+        repeat: 6
+
+  - name: "HauntedEdgeRaksasa"
+    display_name: "헌티드 엣지 (나찰)"
+    type: "attack"
+    cooldown: 12.0
+    actions:
+      - damage: 945
+        hit: 4
+        repeat: 5
+
+  # --- 6차 ---
+  - name: "PhantomBlowVI"
+    display_name: "팬텀 블로우 VI"
+    type: "attack"
+    actions:
+      - damage: 485
+        hit: 6
+    hexa_upgrade:
+      origin_name: "PhantomBlow"
+
+  - name: "AsuraVI"
+    display_name: "아수라 VI"
+    type: "attack"
+    cooldown: 60.0
+    actions:
+      - damage: 1110
+        hit: 6
+        repeat: 40
+    hexa_upgrade:
+      origin_name: "Asura"
+
+  - name: "BladeFuryVI"
+    display_name: "블레이드 퓨리 VI"
+    type: "attack"
+    actions:
+      - damage: 580
+        hit: 5
+    hexa_upgrade:
+      origin_name: "BladeFury"
+
+  - name: "FuriousJetVI"
+    display_name: "퓨리어스 제트 VI"
+    type: "attack"
+    cooldown: 6.0
+    actions:
+      - damage: 590
+        hit: 6
+
+  - name: "SuddenRaidVI"
+    display_name: "써든레이드 VI"
+    type: "attack"
+    cooldown: 14.0
+    actions:
+      - damage: 1020
+        hit: 7
+    hexa_upgrade:
+      origin_name: "SuddenRaid"
+
+  - name: "KarmaBlade"
+    display_name: "카르마 블레이드"
+    type: "origin"
+    cooldown: 360.0
+    actions:
+      - name: "descent_1"
+        damage: 960
+        hit: 5
+        repeat: 6
+      - name: "descent_2"
+        damage: 900
+        hit: 7
+        repeat: 20
+      - name: "karma_hits"
+        damage: 1715
+        hit: 7
+        repeat: 25
+      - name: "manifestation"
+        damage: 1100
+        hit: 7
+        repeat: 30
+
+  - name: "YamazDecree"
+    display_name: "야마즈 디크리"
+    type: "attack"
+    actions:
+      - name: "release"
+        damage: 5779
+        hit: 11
+        repeat: 14
+      - name: "condemnation"
+        damage: 7683
+        hit: 13
+        repeat: 14
+      - name: "judgment"
+        damage: 10495
+        hit: 15
+        repeat: 4

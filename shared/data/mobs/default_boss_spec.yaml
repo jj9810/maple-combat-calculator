@@ -24,7 +24,7 @@ monster:
   # [Optional] 요구 포스 설정
   # 캐릭터의 포스 수치와 비교하여 데미지 배율(Force Adjust)이 엔진 내부에서 자동으로 계산됩니다.
   requirements:
-    # 포스 종류 (ARCANE: 아케인포스, AUTHENTIC: 어센틱포스, NONE: 없음)
+    # 포스 종류 (STAR: 스타포스, ARCANE: 아케인포스, AUTHENTIC: 어센틱포스, NONE: 없음)
     force_type: "NONE"
     # 요구 수치
     force_value: 0

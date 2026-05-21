@@ -1,0 +1,245 @@
+metadata:
+  class: "보우마스터"
+  main_stat_type: "DEX"
+  source:
+    name: "namu_wiki"
+    checked_date: "2026-05-21"
+
+base_specs:
+  weapon:
+    type: "활"
+    constant: 1.3
+    mastery: 70 # 보우 엑스퍼트
+  attack:
+    main_stat:
+      type: "DEX"
+    final_damage:
+      base: 16  # 아머 피어싱
+      max: 30   # 익스텐드 매거진 등 합산 시 조정 필요
+    ignore_defense:
+      base: 40  # 아머 피어싱
+    damage:
+      base: 10  # 프리퍼레이션 등 한시적 버프 제외 기본
+  critical:
+    chance: 65  # 기본(5) + 크리티컬 샷(40) + 샤프 아이즈(20)
+    damage: 41  # 샤프 아이즈(15) + 보우 엑스퍼트(16) + 익스텐드 매거진(10)
+
+skills:
+  # --- 1차 ---
+  - name: "ArrowBlow"
+    display_name: "애로우 블로우"
+    type: "attack"
+    actions:
+      - damage: 160
+        hit: 3
+
+  # --- 2차 ---
+  - name: "WindArrow"
+    display_name: "바람의 시"
+    type: "attack"
+    actions:
+      - damage: 178
+        hit: 3
+
+  - name: "RetreatShot"
+    display_name: "리트리트 샷"
+    type: "attack"
+    actions:
+      - damage: 105
+        hit: 1 # 속사기 형태
+
+  - name: "MagicArrow"
+    display_name: "마법 화살"
+    type: "attack"
+    actions:
+      - damage: 260 # 어드밴스드 퀴버 기준
+        hit: 1
+
+  # --- 3차 ---
+  - name: "ArrowPlatter"
+    display_name: "애로우 플래터"
+    type: "attack"
+    actions:
+      - damage: 181
+        hit: 1
+
+  - name: "ArrowPlatterInstalled"
+    display_name: "애로우 플래터 (설치)"
+    type: "attack"
+    duration: 60.0
+    actions:
+      - damage: 85
+        hit: 1
+
+  - name: "FlashMirage"
+    display_name: "플레시 미라주"
+    type: "attack"
+    actions:
+      - damage: 100 # 임의값, 텍스트 미비하나 통상 100~200%
+        hit: 1
+
+  - name: "Phoenix"
+    display_name: "피닉스"
+    type: "summon"
+    duration: 600.0
+    actions:
+      - damage: 390
+        hit: 1
+
+  # --- 4차 ---
+  - name: "Hurricane"
+    display_name: "폭풍의 시"
+    type: "attack"
+    actions:
+      - damage: 262.5 # 350 * 0.75 (스플릿 어택)
+        hit: 2
+    hexa_upgrade:
+      origin_name: "Hurricane"
+
+  - name: "UncountableArrow"
+    display_name: "언카운터블 애로우"
+    type: "attack"
+    actions:
+      - damage: 400 # 350 + 50(폭시 패시브)
+        hit: 6   # 5 + 1(하이퍼 보너스 어택)
+
+  - name: "AdvancedFinalAttackBow"
+    display_name: "어드밴스드 파이널 어택 (활)"
+    type: "attack"
+    actions:
+      - damage: 210
+        hit: 1
+
+  # --- 하이퍼 ---
+  - name: "WindOfFrey"
+    display_name: "윈드 오브 프레이"
+    type: "attack"
+    cooldown: 15.0
+    actions:
+      - damage: 335
+        hit: 12
+
+  # --- 5차 ---
+  - name: "ArrowRain"
+    display_name: "애로우 레인"
+    type: "attack"
+    duration: 70.0
+    cooldown: 120.0
+    actions:
+      - damage: 1650
+        hit: 7
+        repeat: 1 # 영역당 기본 7타, 다수 타격 시 증가
+
+  - name: "InhumanSpeed"
+    display_name: "잔영의 시"
+    type: "attack"
+    duration: 30.0
+    cooldown: 30.0
+    actions:
+      - damage: 880
+        hit: 3
+
+  - name: "QuiverFullburst"
+    display_name: "퀴버 풀버스트"
+    type: "attack"
+    duration: 40.0
+    cooldown: 120.0
+    actions:
+      - name: "fire_arrow"
+        damage: 550
+        hit: 9
+        repeat: 108 # 6발 * 18회
+
+  - name: "SilhouetteMirage"
+    display_name: "실루엣 미라주"
+    type: "attack"
+    cooldown: 7.5
+    actions:
+      - damage: 1670
+        hit: 3
+        repeat: 5
+
+  # --- 6차 ---
+  - name: "HurricaneVI"
+    display_name: "폭풍의 시 VI"
+    type: "attack"
+    actions:
+      - damage: 575
+        hit: 1
+    hexa_upgrade:
+      origin_name: "Hurricane"
+
+  - name: "HurricaneVIRapid"
+    display_name: "폭풍의 시 VI (난사)"
+    type: "attack"
+    actions:
+      - damage: 750
+        hit: 1
+
+  - name: "ArrowPlatterVI"
+    display_name: "애로우 플래터 VI"
+    type: "attack"
+    actions:
+      - damage: 530
+        hit: 1
+
+  - name: "ArrowPlatterInstalledVI"
+    display_name: "애로우 플래터 VI (설치)"
+    type: "attack"
+    duration: 60.0
+    actions:
+      - damage: 440
+        hit: 1
+
+  - name: "UncountableArrowVI"
+    display_name: "언카운터블 애로우 VI"
+    type: "attack"
+    actions:
+      - damage: 610
+        hit: 5
+    hexa_upgrade:
+      origin_name: "UncountableArrow"
+
+  - name: "UncountableArrowEnhancedVI"
+    display_name: "강화 언카운터블 애로우 VI"
+    type: "attack"
+    cooldown: 6.0
+    actions:
+      - damage: 650
+        hit: 5
+
+  - name: "FlashMirageVI"
+    display_name: "플레시 미라주 VI"
+    type: "attack"
+    cooldown: 1.0
+    actions:
+      - damage: 1245
+        hit: 4
+        repeat: 4
+
+  - name: "AscendantShadow"
+    display_name: "어센던트 셰이드"
+    type: "origin"
+    cooldown: 360.0
+    actions:
+      - name: "cutscene"
+        damage: 1425
+        hit: 14
+        repeat: 39
+      - name: "follow_up"
+        damage: 1543
+        hit: 8
+        repeat: 10 # 30초 동안 3초 간격
+
+  - name: "PointZero"
+    display_name: "포인트 제로"
+    type: "attack"
+    actions:
+      - name: "impact"
+        damage: 7590
+        hit: 10
+        repeat: 16
+      - name: "explosion"
+        damage: 7905
+        hit: 13
+        repeat: 16

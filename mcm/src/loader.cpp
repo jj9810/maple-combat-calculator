@@ -39,7 +39,7 @@ std::string normalize_data_key(const std::string& value) {
 
     if (!loaded) {
         try {
-            YAML::Node mapping_root = YAML::LoadFile("shared/data/classes/class_mapping.yaml");
+            YAML::Node mapping_root = YAML::LoadFile("shared/data/common/class_mapping.yaml");
             if (mapping_root["mappings"]) {
                 for (auto it = mapping_root["mappings"].begin(); it != mapping_root["mappings"].end(); ++it) {
                     mapping_cache[it->first.as<std::string>()] = it->second.as<std::string>();
