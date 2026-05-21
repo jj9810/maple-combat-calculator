@@ -34,18 +34,6 @@ public:
     static InternalStat parse_stat_from_payload(
         const google::protobuf::Struct& payload
     );
-
-private:
-    /**
-     * 레벨 보정(Level Adjust) 수치를 계산합니다.
-     */
-    static double get_level_adjust(int char_level, int mob_level);
-
-    /**
-     * 포스 보정(Force Adjust) 수치를 계산합니다.
-     * (현재는 기본값 1.0 반환, 향후 ARC/AUT 대응 필요)
-     */
-    static double get_force_adjust(const SimulationContext& context);
 };
 
 }

@@ -16,14 +16,12 @@ long long MCMConnector::calculate_damage(
 
     double skill_damage_percent = event.damage();
     double mastery = total_stat.mastery();
-    if (mastery <= 0) mastery = 0.95; 
 
-    int char_level = char_info.level();
-    int mob_level = mob_info.level();
-
-    // 몬스터 속성 반감
-    double mob_elem_res = mob_info.elemental_resistance();
-    if (mob_elem_res <= 0 && mob_info.is_boss()) mob_elem_res = MOB_ELEM_RES;
+    // 포스 타입 매핑
+    ForceType force_type = ForceType::NONE;
+    if (mob_info.force_type() == "ARCANE") force_type = ForceType::ARCANE;
+    else if (mob_info.force_type() == "AUTHENTIC") force_type = ForceType::AUTHENTIC;
+    else if (mob_info.force_type() == "STAR") force_type = ForceType::STARFORCE;
 
     return calcSkillDamage(
         skill_damage_percent,
@@ -31,10 +29,12 @@ long long MCMConnector::calculate_damage(
         char_info.main_stat_type(),
         mastery,
         mob_info.defense_rate(),
-        mob_elem_res,
+        mob_info.elemental_resistance(),
         char_info.weapon_constant(),
-        get_level_adjust(char_level, mob_level),
-        get_force_adjust(context)
+        char_info.level(),
+        mob_info.level(),
+        force_type,
+        mob_info.required_force()
     );
 }
 
@@ -46,24 +46,22 @@ long long MCMConnector::calculate_dot_damage(
     const auto& char_info = context.get_char_info();
     const auto& mob_info = context.get_mob_info();
 
-    // MCC의 MappedStats를 사용하여 주/부스탯/공격력 추출
-    MappedStats mapped = mapStatType(total_stat, char_info.main_stat_type());
-
-    // 몬스터 속성 반감
-    double mob_elem_res = mob_info.elemental_resistance();
-    if (mob_elem_res <= 0 && mob_info.is_boss()) mob_elem_res = MOB_ELEM_RES;
+    // 포스 타입 매핑
+    ForceType force_type = ForceType::NONE;
+    if (mob_info.force_type() == "ARCANE") force_type = ForceType::ARCANE;
+    else if (mob_info.force_type() == "AUTHENTIC") force_type = ForceType::AUTHENTIC;
+    else if (mob_info.force_type() == "STAR") force_type = ForceType::STARFORCE;
 
     return calcDotDamage(
         event.damage(),
-        mapped.mainStat,
-        mapped.subStat,
-        mapped.attackOrMagic,
-        total_stat.damage() + total_stat.boss_damage(),
-        total_stat.final_damage(),
-        total_stat.elemental_resistance_ignore(),
-        mob_info.defense_rate(),
-        mob_elem_res,
-        char_info.weapon_constant()
+        total_stat,
+        char_info.main_stat_type(),
+        mob_info.elemental_resistance(),
+        char_info.weapon_constant(),
+        char_info.level(),
+        mob_info.level(),
+        force_type,
+        mob_info.required_force()
     );
 }
 
@@ -107,56 +105,6 @@ InternalStat MCMConnector::parse_stat_from_payload(
     stat.crit_damage = get_val("critical_damage");
 
     return stat;
-}
-
-double MCMConnector::get_level_adjust(int char_level, int mob_level) {
-    int level_diff = char_level - mob_level;
-    if (level_diff >= 5) return 1.1;
-    if (level_diff >= 0) return 1.0 + (level_diff * 0.02);
-    
-    double adjust = 1.0 + (level_diff * 0.05); 
-    return std::max(0.1, adjust);
-}
-
-double MCMConnector::get_force_adjust(const SimulationContext& context) {
-    const auto& mob_info = context.get_mob_info();
-    const auto& total_stat = context.get_current_total_stat();
-
-    // 1. 어센틱포스(AUT) 지역인 경우
-    if (mob_info.required_authenticforce() > 0) {
-        int my_aut = total_stat.authenticforce();
-        int req_aut = mob_info.required_authenticforce();
-        
-        if (my_aut >= req_aut) return 1.0 + (std::min(my_aut - req_aut, 50) / 10 * 0.05);
-        
-        double ratio = static_cast<double>(my_aut) / req_aut;
-        if (ratio >= 0.9) return 0.95;
-        if (ratio >= 0.8) return 0.90;
-        if (ratio >= 0.7) return 0.85;
-        if (ratio >= 0.6) return 0.75;
-        if (ratio >= 0.5) return 0.60;
-        if (ratio >= 0.4) return 0.50;
-        if (ratio >= 0.3) return 0.40;
-        if (ratio >= 0.2) return 0.25;
-        if (ratio >= 0.1) return 0.10;
-        return 0.05;
-    }
-
-    // 2. 아케인포스(ARC) 지역인 경우
-    if (mob_info.required_arcaneforce() > 0) {
-        double ratio = static_cast<double>(total_stat.arcaneforce()) / mob_info.required_arcaneforce();
-        
-        if (ratio >= 1.5) return 1.5;
-        if (ratio >= 1.3) return 1.3;
-        if (ratio >= 1.1) return 1.1;
-        if (ratio >= 1.0) return 1.0;
-        if (ratio >= 0.7) return 0.8;
-        if (ratio >= 0.5) return 0.6;
-        if (ratio >= 0.3) return 0.3;
-        return 0.1;
-    }
-
-    return 1.0;
 }
 
 }

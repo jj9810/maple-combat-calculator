@@ -289,13 +289,10 @@ bool LogLoader::load_nexon_json_from_string(
         mcc_mob_info->set_is_boss(mob_node["is_boss"].as<bool>(true));
 
         if (mob_node["requirements"]) {
-            std::string f_type = mob_node["requirements"]["force_type"].as<std::string>("");
+            std::string f_type = mob_node["requirements"]["force_type"].as<std::string>("NONE");
             int f_val = mob_node["requirements"]["force_value"].as<int>(0);
-            if (f_type == "ARCANE") {
-                mcc_mob_info->set_required_arcaneforce(f_val);
-            } else if (f_type == "AUTHENTIC") {
-                mcc_mob_info->set_required_authenticforce(f_val);
-            }
+            mcc_mob_info->set_force_type(f_type);
+            mcc_mob_info->set_required_force(f_val);
         }
     } catch (...) {
         std::cerr << "Warning: Failed to load default monster info. Using fallbacks." << std::endl;

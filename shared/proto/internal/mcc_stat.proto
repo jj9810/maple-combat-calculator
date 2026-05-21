@@ -32,7 +32,7 @@ message MCCStat {
     double cooldown_no_reset = 18;
     
     // 보조 지표
-    double mastery = 19;
+    double mastery = 19; // 숙련도 (%)
     double combat_power = 20;
     double status_resistance = 21;
     double elemental_resistance_ignore = 22;

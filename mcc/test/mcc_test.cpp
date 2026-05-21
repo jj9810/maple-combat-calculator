@@ -38,7 +38,7 @@ void test_skill_damage() {
         10000.0, // mainStat
         2000.0,  // subStat
         1000.0,  // attack
-        0.95,    // mastery
+        95.0,    // mastery (95%)
         50.0,    // damagePercent
         20.0,    // finalDamagePercent
         1.0,     // critRate

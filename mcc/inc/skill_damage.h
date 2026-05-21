@@ -18,6 +18,30 @@ constexpr double CRIT_RATIO_MAX = 1.5;
 constexpr double MOB_ELEM_RES = 0.5;
 
 /**
+ * 포스 종류를 정의합니다.
+ */
+enum class ForceType {
+    NONE = 0,
+    STARFORCE = 1,
+    ARCANE = 2,
+    AUTHENTIC = 3
+};
+
+/**
+ * 레벨 차이에 따른 데미지 보정 배율을 계산합니다.
+ */
+double getLevelAdjust(int charLevel, int mobLevel);
+
+/**
+ * 포스(ARC/AUT/STAR) 요구치에 따른 데미지 보정 배율을 계산합니다.
+ */
+double getForceAdjust(
+    ForceType type,
+    int myForce,
+    int reqForce
+);
+
+/**
  * 공식 API 기반의 Stat을 사용하여 스킬 데미지를 계산합니다.
  */
 long long calcSkillDamage(
@@ -28,8 +52,10 @@ long long calcSkillDamage(
     double mobDefense,
     double mobElemRes,
     double weaponConst,
-    double levelAdjust,
-    double forceAdjust
+    int charLevel,
+    int mobLevel,
+    ForceType forceType,
+    int reqForce
 );
 
 /**
@@ -63,52 +89,19 @@ long long calcSkillDamageRaw(
     double levelAdjust,
     double forceAdjust
 );
-
 /**
- * 일반적인 스킬 데미지를 계산하는 편의 함수 (크확 100%, 기본 몬스터 속성 저항 적용)
- */
-long long calcSkillDamage(
-    // 스킬 기본 정보
-    double skillDamage,
-    // 캐릭터 스탯
-    double mainStat,
-    double subStat,
-    double attack,
-    double mastery,
-    // 데미지 관련 스탯
-    double damagePercent,
-    double finalDamagePercent,
-    // 크리티컬 관련 스탯
-    double critDamagePercent,
-    // 몬스터 상호작용
-    double ignoreDefense,
-    double elementalAdjust,
-    double mobDefense,
-    // 기타
-    double weaponConst,
-    double levelAdjust,
-    double forceAdjust
-);
-
-/**
- * 도트 데미지를 계산하는 함수
+ * 공식 API 기반의 Stat을 사용하여 도트 데미지를 계산합니다.
  */
 long long calcDotDamage(
-    // 스킬 기본 정보
     double skillDamage,
-    // 캐릭터 스탯
-    double mainStat,
-    double subStat,
-    double attack,
-    // 데미지 관련 스탯
-    double damagePercent,
-    double finalDamagePercent,
-    // 몬스터 상호작용
-    double elementalAdjust,
-    double mobDefense,
+    const maple_combat_calculator::shared::MCCStat& stat,
+    int mainStatType, // CharacterInfo.StatType enum 값
     double mobElemRes,
-    // 기타
-    double weaponConst
+    double weaponConst,
+    int charLevel,
+    int mobLevel,
+    ForceType forceType,
+    int reqForce
 );
 
 /**

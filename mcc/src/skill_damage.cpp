@@ -18,14 +18,24 @@ long long calcSkillDamage(
     double mobDefense,
     double mobElemRes,
     double weaponConst,
-    double levelAdjust,
-    double forceAdjust
+    int charLevel,
+    int mobLevel,
+    ForceType forceType,
+    int reqForce
 ) {
     // StatType 로직을 사용하여 필요한 스탯을 매핑합니다.
     MappedStats mapped = mapStatType(stat, mainStatType);
 
-    // 매개변수로 받은 몬스터 속성 저항 사용 (없으면 기본값 적용)
-    double finalMobElemRes = (mobElemRes > 0) ? mobElemRes : MOB_ELEM_RES;
+    double levelAdjust = getLevelAdjust(charLevel, mobLevel);
+    
+    int myForce = 0;
+    switch (forceType) {
+        case ForceType::STARFORCE: myForce = stat.starforce(); break;
+        case ForceType::ARCANE: myForce = stat.arcaneforce(); break;
+        case ForceType::AUTHENTIC: myForce = stat.authenticforce(); break;
+        default: break;
+    }
+    double forceAdjust = getForceAdjust(forceType, myForce, reqForce);
 
     // 공식 API 기반의 MCCStat은 이미 최종 합산된 값을 제공하므로,
     // 기존의 복잡한 개별 파라미터 대신 필요한 필드를 직접 추출하여 계산합니다.
@@ -42,9 +52,116 @@ long long calcSkillDamage(
         stat.ignore_defense(), // MCM에서 이미 합산된 값을 사용
         stat.elemental_resistance_ignore(), // stat 내부의 속성 내성 무시 사용
         mobDefense,
-        finalMobElemRes,
+        mobElemRes,
         weaponConst,
         levelAdjust,
+        forceAdjust
+    );
+}
+
+double getLevelAdjust(int charLevel, int mobLevel) {
+    int level_diff = charLevel - mobLevel;
+    if (level_diff >= 5) return 1.1;
+    if (level_diff >= 0) return 1.0 + (level_diff * 0.02);
+    
+    double adjust = 1.0 + (level_diff * 0.05); 
+    return std::max(0.1, adjust);
+}
+
+double getForceAdjust(
+    ForceType type,
+    int myForce,
+    int reqForce
+) {
+    if (reqForce <= 0) return 1.0;
+
+    switch (type) {
+        case ForceType::STARFORCE: {
+            if (myForce >= reqForce) {
+                int excess = myForce - reqForce;
+                return 1.0 + std::min(excess, 20) * 0.01;
+            }
+            
+            double ratio = static_cast<double>(myForce) / reqForce;
+            if (ratio >= 0.7) return 0.7;
+            if (ratio >= 0.5) return 0.5;
+            if (ratio >= 0.3) return 0.3;
+            if (ratio >= 0.1) return 0.1;
+            return 0.01; // Less than 10%
+        }
+        case ForceType::ARCANE: {
+            double ratio = static_cast<double>(myForce) / reqForce;
+            if (ratio >= 1.5) return 1.5;
+            if (ratio >= 1.3) return 1.3;
+            if (ratio >= 1.1) return 1.1;
+            if (ratio >= 1.0) return 1.0;
+            if (ratio >= 0.7) return 0.8;
+            if (ratio >= 0.5) return 0.6;
+            if (ratio >= 0.3) return 0.3;
+            return 0.1;
+        }
+        case ForceType::AUTHENTIC: {
+            if (myForce >= reqForce) return 1.0 + (std::min(myForce - reqForce, 50) / 10 * 0.05);
+            
+            double ratio = static_cast<double>(myForce) / reqForce;
+            if (ratio >= 0.9) return 0.95;
+            if (ratio >= 0.8) return 0.90;
+            if (ratio >= 0.7) return 0.85;
+            if (ratio >= 0.6) return 0.75;
+            if (ratio >= 0.5) return 0.60;
+            if (ratio >= 0.4) return 0.50;
+            if (ratio >= 0.3) return 0.40;
+            if (ratio >= 0.2) return 0.25;
+            if (ratio >= 0.1) return 0.10;
+            return 0.05;
+        }
+        case ForceType::NONE:
+        default:
+            return 1.0;
+    }
+}
+
+long long calcDotDamage(
+    double skillDamage,
+    const maple_combat_calculator::shared::MCCStat& stat,
+    int mainStatType,
+    double mobElemRes,
+    double weaponConst,
+    int charLevel,
+    int mobLevel,
+    ForceType forceType,
+    int reqForce
+) {
+    MappedStats mapped = mapStatType(stat, mainStatType);
+
+    double levelAdjust = getLevelAdjust(charLevel, mobLevel);
+    
+    int myForce = 0;
+    switch (forceType) {
+        case ForceType::STARFORCE: myForce = stat.starforce(); break;
+        case ForceType::ARCANE: myForce = stat.arcaneforce(); break;
+        case ForceType::AUTHENTIC: myForce = stat.authenticforce(); break;
+        default: break;
+    }
+    double forceAdjust = getForceAdjust(forceType, myForce, reqForce);
+
+    // DOT 데미지 특성 (인벤 실험 참고: https://www.inven.co.kr/board/maple/2304/24096)
+    return calcSkillDamageRaw(
+        skillDamage,
+        mapped.mainStat,
+        mapped.subStat,
+        mapped.attackOrMagic,
+        100.0,              // mastery: 도트딜은 숙련도 100% (고정 데미지)
+        0.0,                // damagePercent: 미적용
+        0.0,                // finalDamagePercent: 미적용
+        0.0,                // critRate: 크리티컬 미적용
+        0.0,                // critDamagePercent: 크리티컬 데미지 미적용
+        0.0,                // ignoreDefense: 방무 미적용
+        stat.elemental_resistance_ignore(), // elementalAdjust
+        0.0,                // mobDefense: 방어율 무시 (0으로 처리)
+        mobElemRes,
+        weaponConst,
+        std::min(1.0, levelAdjust), // 레벨 보정은 1.0 이하(감소)만 적용
         forceAdjust
     );
 }
@@ -209,49 +326,6 @@ long long calcSkillDamageRaw(
 #endif
 }
 
-long long calcSkillDamage(
-    // 스킬 기본 정보
-    double skillDamage,
-    // 캐릭터 스탯
-    double mainStat,
-    double subStat,
-    double attack,
-    double mastery,
-    // 데미지 관련 스탯
-    double damagePercent,
-    double finalDamagePercent,
-    // 크리티컬 관련 스탯
-    double critDamagePercent,
-    // 몬스터 상호작용
-    double ignoreDefense,
-    double elementalAdjust,
-    double mobDefense,
-    // 기타
-    double weaponConst,
-    double levelAdjust,
-    double forceAdjust
-)
-{
-    return calcSkillDamageRaw(
-        skillDamage,
-        mainStat,
-        subStat,
-        attack,
-        mastery,
-        damagePercent,
-        finalDamagePercent,
-        100.0,              // critRate: 100%
-        critDamagePercent,
-        ignoreDefense,
-        elementalAdjust,
-        mobDefense,
-        MOB_ELEM_RES,       // 기본값 사용
-        weaponConst,
-        levelAdjust,
-        forceAdjust
-    );
-}
-
 long long calcDotDamage(
     // 스킬 기본 정보
     double skillDamage,
@@ -259,7 +333,7 @@ long long calcDotDamage(
     double mainStat,
     double subStat,
     double attack,
-    // 데미지 관련 스탯
+    // 데미지 관련 스탯 (DOT에서는 무시됨)
     double damagePercent,
     double finalDamagePercent,
     // 몬스터 상호작용
@@ -267,25 +341,34 @@ long long calcDotDamage(
     double mobDefense,
     double mobElemRes,
     // 기타
-    double weaponConst
+    double weaponConst,
+    double levelAdjust,
+    double forceAdjust
 )
 {
+    // DOT 데미지 특성 (인벤 실험 참고: https://www.inven.co.kr/board/maple/2304/24096)
+    // 1. 방어율 및 방무 무시
+    // 2. 데미지%, 보공%, 최종데미지% 미적용
+    // 3. 크리티컬 미적용
+    // 4. 레벨 보정은 감소만 적용 (증가는 적용되지 않음)
+    // 5. 포스 보정은 정상 적용
+    
     return calcSkillDamageRaw(
         skillDamage,
         mainStat,
         subStat,
         attack,
-        100.0,              // mastery: 도트딜은 숙련도 100%
-        damagePercent,
-        finalDamagePercent,
+        100.0,              // mastery: 도트딜은 숙련도 100% (고정 데미지)
+        0.0,                // damagePercent: 미적용
+        0.0,                // finalDamagePercent: 미적용
         0.0,                // critRate: 크리티컬 미적용
         0.0,                // critDamagePercent: 크리티컬 데미지 미적용
         0.0,                // ignoreDefense: 방무 미적용
         elementalAdjust,
-        mobDefense,
+        0.0,                // mobDefense: 방어율 무시 (0으로 처리)
         mobElemRes,
         weaponConst,
-        1.0,                // TODO: verify levelAdjust for DOT
-        1.0                 // TODO: verify forceAdjust for DOT
+        std::min(1.0, levelAdjust), // 레벨 보정은 1.0 이하(감소)만 적용
+        forceAdjust
     );
 }
