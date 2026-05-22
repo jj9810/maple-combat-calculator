@@ -9,7 +9,7 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
     endif()
 endif()
 
-project(maple_combat_calculator)
+project(maple-combat-calculator)
 
 enable_testing()
 
