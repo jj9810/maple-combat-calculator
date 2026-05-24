@@ -4,6 +4,7 @@
 
 #include "../inc/skill_damage.h"
 #include "../inc/combat_power.h"
+#include <algorithm>
 #include <cmath>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
@@ -298,16 +299,18 @@ long long calcSkillDamageRaw(
 {
     // (주스텟*4 + 부스텟) / 100
     double statRatio = (mainStat * 4 + subStat) * 0.01;
+    double skillDamageRatio = skillDamage * 0.01;
 
     double damageRatio = damagePercent * 0.01 + 1.0;
     double finalDamageRatio = finalDamagePercent * 0.01 + 1.0;
+    double clampedCritRate = std::clamp(critRate, 0.0, 100.0);
 
     double defenseRatio = std::max(1.0 - mobDefense * 0.01 * (1.0 - ignoreDefense * 0.01), 0.0);
 
     // {1 - 속성내성% * (1 - 내속성무시%)}
     double elementalRatio = 1.0 - mobElemRes * (1.0 - elementalAdjust * 0.01);
 
-    double maxDamageVal = skillDamage * statRatio * weaponConst * attack *
+    double maxDamageVal = skillDamageRatio * statRatio * weaponConst * attack *
                damageRatio * finalDamageRatio *
                defenseRatio * elementalRatio *
                levelAdjust * forceAdjust;
@@ -318,10 +321,10 @@ long long calcSkillDamageRaw(
 #if MAX_DAMAGE_CAP
     long long correctedAverageDamageCrit = applyMaxDamageCorrection(averageDamageCrit, maxDamageVal, critDamagePercent, mastery, true);
     long long correctedAverageDamageNonCrit = applyMaxDamageCorrection(averageDamageNonCrit, maxDamageVal, 0, mastery, false);
-    long long averageDamageFinal = static_cast<long long>((critRate * 0.01 * correctedAverageDamageCrit) + ((100.0 - critRate) * 0.01 * correctedAverageDamageNonCrit));
+    long long averageDamageFinal = static_cast<long long>((clampedCritRate * 0.01 * correctedAverageDamageCrit) + ((100.0 - clampedCritRate) * 0.01 * correctedAverageDamageNonCrit));
     return averageDamageFinal;
 #else
-    long long averageDamage = static_cast<long long>((critRate * 0.01 * averageDamageCrit) + ((100.0 - critRate) * 0.01 * averageDamageNonCrit));
+    long long averageDamage = static_cast<long long>((clampedCritRate * 0.01 * averageDamageCrit) + ((100.0 - clampedCritRate) * 0.01 * averageDamageNonCrit));
     return averageDamage;
 #endif
 }

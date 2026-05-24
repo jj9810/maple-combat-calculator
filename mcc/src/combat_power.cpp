@@ -118,7 +118,7 @@ int calculateCombatPower(
         std::floor(totalFlatAtt * attMul) *
         toMultiplier(critDmg - innateCritDmg + BASE_CRIT_CONSTANT) *
         toMultiplier(bossDmg - innateBossDmg + dmg - innateDmg) *
-        (toMultiplier(finalDmg) / innateFinalDmg)
+        (toMultiplier(finalDmg) / toMultiplier(innateFinalDmg))
     ));
 }
 
