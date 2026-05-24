@@ -1,5 +1,105 @@
 # 아델(Adele) 전체 스킬 데이터 - 다단계 액션 구조 및 모든 스킬 복구 완료
-class: "Adele"
+metadata:
+  class: "아델"
+  main_stat_type: "STR"
+  source:
+    name: "namu_wiki"
+    checked_date: "2026-05-18"
+base_specs:
+  weapon:
+    type: "튜너"
+    constant: 1.3
+    attack_speed_stage: 8
+    attack_speed_sources:
+      - { name: "튜너", value: 6 }
+      - { name: "부스터", value: 2 }
+    reaches_attack_speed_cap: true
+    mastery: 90
+    mastery_sources:
+      - { name: "기본 숙련도", value: 20 }
+      - { name: "튜너 엑스퍼트", value: 70 }
+    secondary_weapon_enhanceable: false
+    secondary_weapon: "브레이슬릿"
+  attack:
+    main_stat:
+      type: "STR"
+      percent: 15
+      flat: 60
+      sources:
+        - { name: "레프의 용사", percent: 15 }
+        - { name: "트레인", flat: 60 }
+    sub_stat:
+      type: "DEX"
+      flat: 0
+    attack_power:
+      percent: 10
+      flat: 150
+      sources:
+        - { name: "패이스", percent: 10 }
+        - { name: "루디먼트", flat: 30 }
+        - { name: "마스터리", flat: 30 }
+        - { name: "어센트", flat: 30 }
+        - { name: "엑스퍼트", flat: 30 }
+        - { name: "어테인", flat: 30 }
+    damage:
+      base: 35
+      max: 66
+    boss_damage:
+      base: 4
+    final_damage:
+      base: 67.31
+      max: 77.35
+    ignore_defense:
+      base: 45.2
+      max: 85.26
+    elemental_resistance_ignore: 0
+    attributes: ["physical", "dark"]
+    extra_hit: false
+    damage_split: false
+  defense:
+    defense_percent: 0
+    status_resistance: 30
+    elemental_resistance: 30
+    evasion: 0
+    stance: 100
+    super_stance: "다이크 시전 중"
+    mp_guard: false
+    damage_reduction: -30
+    damage_absorption: 0
+    max_hp_percent_damage_reduction:
+      base: 0
+      max: 55
+    guard: "다이크 사용 직후 피격 한정"
+  critical:
+    chance: 45
+    extra_chance: 0
+    damage: 21
+    final_average_value: 145
+  hp_mp:
+    max_hp:
+      flat: 1000
+      percent: 10
+    hp_recovery_per_5s:
+      base: 4
+      max: 7
+    restore_hp_recovery: 10.5
+    attack_hp_recovery: 0
+    skill_cost: ["MP", "ether"]
+    max_mp: 0
+    mp_recovery_per_5s:
+      base: 4
+      max: 7
+    attack_mp_recovery: 0
+    potion_efficiency: 0
+  movement:
+    speed: 122
+    max_speed: 160
+    jump: 120
+    double_jump: true
+    upward_jump: true
+    dash: "글린트"
+    backward_movement: "페더"
+    resonance_movement: true
 skills:
   # --- 주요 공격기 및 4차/HEXA 강화 (마스터리 코어) ---
   - name: "Divide"

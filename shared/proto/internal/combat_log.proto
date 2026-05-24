@@ -73,7 +73,8 @@ message MonsterInfo {
     int32 level = 2;
     double defense_rate = 3;
     bool is_boss = 4;
-    int32 required_arcaneforce = 5;
-    int32 required_authenticforce = 6;
     double elemental_resistance = 7;
+
+    string force_type = 8; // NONE, ARCANE, AUTHENTIC, STAR
+    int32 required_force = 9;
 }
