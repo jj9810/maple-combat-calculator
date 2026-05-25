@@ -1,9 +1,10 @@
 #include "mcm/inc/mcm.h"
-#include "mcm/inc/loader.h"
+
 #include "mcm/inc/connector.h"
-#include "mcc/inc/skill_damage.h"
+#include "mcm/inc/loader.h"
 
 #include <iostream>
+#include <memory>
 
 namespace mcm {
 
@@ -23,15 +24,14 @@ void MCM::run() {
 
     // Context 초기화
     context_ = std::make_unique<SimulationContext>(
-        combat_log_.base_stat(),
-        combat_log_.character_info(),
-        combat_log_.monster_info()
+        combat_log_.base_stat(), combat_log_.character_info(), combat_log_.monster_info()
     );
 
     // 전투 시간 설정
     int total_play_logs = 0;
-    for (const auto& op : combat_log_.operation_logs()) total_play_logs += op.play_logs_size();
-    
+    for (const auto& op : combat_log_.operation_logs())
+        total_play_logs += op.play_logs_size();
+
     if (total_play_logs == 0) {
         std::cout << "No play logs found." << std::endl;
         return;
@@ -39,10 +39,10 @@ void MCM::run() {
 
     const auto& first_op = combat_log_.operation_logs(0);
     double start_time = first_op.play_logs(0).clock();
-    
+
     const auto& last_op = combat_log_.operation_logs(combat_log_.operation_logs_size() - 1);
     double end_time = last_op.play_logs(last_op.play_logs_size() - 1).clock();
-    
+
     aggregator_.set_combat_time(start_time, end_time);
 
     // 모든 로그 순회
@@ -76,26 +76,26 @@ void MCM::process_playlog(const maple_combat_calculator::shared::PlayLog& play_l
 
 void MCM::process_event(const maple_combat_calculator::shared::Event& event, double clock) {
     switch (event.method()) {
-        case maple_combat_calculator::shared::Event::DAMAGE:
-            handle_damage_event(event, clock);
-            break;
-        case maple_combat_calculator::shared::Event::BUFF:
-            handle_buff_event(event);
-            break;
-        case maple_combat_calculator::shared::Event::DOT:
-            handle_dot_event(event, clock);
-            break;
-        case maple_combat_calculator::shared::Event::OTHER:
-        default:
-            // 무시
-            break;
+    case maple_combat_calculator::shared::Event::DAMAGE:
+        handle_damage_event(event, clock);
+        break;
+    case maple_combat_calculator::shared::Event::BUFF:
+        handle_buff_event(event);
+        break;
+    case maple_combat_calculator::shared::Event::DOT:
+        handle_dot_event(event, clock);
+        break;
+    case maple_combat_calculator::shared::Event::OTHER:
+    default:
+        // 무시
+        break;
     }
 }
 
 void MCM::handle_damage_event(const maple_combat_calculator::shared::Event& event, double clock) {
     // 1. Connector를 통해 MCC 연산 수행
     long long single_line_damage = MCMConnector::calculate_damage(*context_, event);
-    
+
     // 2. 결과 집계
     aggregator_.record_damage(clock, event.name(), single_line_damage, event.hit());
 }
@@ -119,4 +119,4 @@ void MCM::handle_dot_event(const maple_combat_calculator::shared::Event& event, 
     aggregator_.record_damage(clock, event.name(), dot_damage, 1);
 }
 
-}
+} // namespace mcm

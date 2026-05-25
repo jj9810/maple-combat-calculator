@@ -1,62 +1,68 @@
 #include "combat_power.h"
+#include "combat_power_raw.h"
 #include "skill_damage.h"
-#include <iostream>
+#include "skill_damage_raw.h"
+#include "types.h"
+
 #include <cassert>
+#include <iostream>
+
+using namespace mcc;
 
 void test_combat_power() {
-    std::cout << "Testing calculateCombatPower..." << std::endl;
-    
+    std::cout << "Testing calculate_combat_power_raw..." << std::endl;
+
     // Simple test case with dummy values
-    int cp = calculateCombatPower(
+    int cp = calculate_combat_power_raw(
         10000, // mainStat
         2000,  // subStat
         1000,  // flatAtt
         500,   // weaponBaseAtt
         100,   // weaponSfAtt
-        600,   // convertedWeaponAtt
+        600,   // standardWeaponAtt
         20.0,  // attPercent
-        50.0,  // critDmg
-        35.0,  // innateCritDmg
-        100.0, // bossDmg
-        0.0,   // innateBossDmg
-        50.0,  // dmg
-        0.0,   // innateDmg
-        20.0,  // finalDmg
-        0.0    // innateFinalDmg
+        50.0,  // critDmgPercent
+        35.0,  // innateCritDmgPercent
+        100.0, // bossDmgPercent
+        0.0,   // innateBossDmgPercent
+        50.0,  // dmgPercent
+        0.0,   // innateDmgPercent
+        20.0,  // finalDmgPercent
+        0.0    // innateFinalDmgPercent
     );
-    
+
     std::cout << "Calculated Combat Power: " << cp << std::endl;
     assert(cp > 0);
     std::cout << "Combat Power Test Success!" << std::endl;
 }
 
 void test_skill_damage() {
-    std::cout << "Testing calcSkillDamageRaw..." << std::endl;
-    
-    long long damage = calcSkillDamageRaw(
-        500.0,  // skillDamage
+    std::cout << "Testing calc_skill_damage_raw..." << std::endl;
+
+    long long damage = calc_skill_damage_raw(
+        500.0,   // skillDamagePercent
         10000.0, // mainStat
         2000.0,  // subStat
         1000.0,  // attack
-        95.0,    // mastery (95%)
+        95.0,    // masteryPercent
         50.0,    // damagePercent
         20.0,    // finalDamagePercent
-        1.0,     // critRate
+        1.0,     // critRatePercent
         50.0,    // critDamagePercent
-        90.0,    // ignoreDefense
-        1.0,     // elementalAdjust
-        300.0,   // mobDefense
-        0.5,     // mobElemRes
+        90.0,    // ignoreDefensePercent
+        1.0,     // elementalAdjustPercent
+        300.0,   // mobDefensePercent
+        50.0,    // mobElemResPercent
         1.5,     // weaponConst
         1.1,     // levelAdjust
         1.0      // forceAdjust
     );
-    
+
     std::cout << "Calculated Skill Damage: " << damage << std::endl;
     assert(damage > 0);
 
-    long long percent_scaled_damage = calcSkillDamageRaw(
-        100.0,  // 100% should be treated as 1.0x, not 100.0x
+    long long percent_scaled_damage = calc_skill_damage_raw(
+        100.0, // 100% should be treated as 1.0x, not 100.0x
         100.0,
         0.0,
         100.0,
@@ -75,7 +81,7 @@ void test_skill_damage() {
     );
     assert(percent_scaled_damage == 400);
 
-    long long overcrit_damage = calcSkillDamageRaw(
+    long long overcrit_damage = calc_skill_damage_raw(
         240.0,
         133886.0,
         16890.0,

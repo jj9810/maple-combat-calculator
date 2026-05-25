@@ -1,14 +1,17 @@
 #include "mcm/inc/loader.h"
-#include "nexon/skill_timeline.pb.h"
+
+#include "mcc/inc/types.h"
 #include "nexon/battle_practice_character_info.pb.h"
-#include <yaml-cpp/yaml.h>
+#include "nexon/skill_timeline.pb.h"
+
+#include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <map>
-#include <algorithm>
+#include <sstream>
 #include <vector>
-#include <cctype>
+#include <yaml-cpp/yaml.h>
 
 namespace mcm {
 
@@ -19,7 +22,7 @@ struct SkillInfo {
     int hit = 0;
     double duration = 0;
     std::map<std::string, double> effects;
-    
+
     struct Action {
         double damage;
         int hit;
@@ -41,7 +44,9 @@ std::string normalize_data_key(const std::string& value) {
         try {
             YAML::Node mapping_root = YAML::LoadFile("shared/data/common/class_mapping.yaml");
             if (mapping_root["mappings"]) {
-                for (auto it = mapping_root["mappings"].begin(); it != mapping_root["mappings"].end(); ++it) {
+                for (auto it = mapping_root["mappings"].begin();
+                     it != mapping_root["mappings"].end();
+                     ++it) {
                     mapping_cache[it->first.as<std::string>()] = it->second.as<std::string>();
                 }
             }
@@ -95,29 +100,30 @@ YAML::Node load_skill_root(const std::string& raw_key) {
     throw YAML::BadFile("No skill data file found");
 }
 
-int parse_main_stat_type(const YAML::Node& node, const maple_combat_calculator::shared::MCCStat& stat) {
+mcc::MainStatType
+parse_main_stat_type(const YAML::Node& node, const maple_combat_calculator::shared::MCCStat& stat) {
     if (node) {
         if (node.IsScalar()) {
             const std::string value = node.as<std::string>();
-            if (value == "STR") return 1;
-            if (value == "DEX") return 2;
-            if (value == "INT") return 3;
-            if (value == "LUK") return 4;
-            if (value == "LUK_SECONDARY") return 5;
-            if (value == "ALL") return 6;
-            if (value == "HP") return 7;
+            if (value == "STR") return mcc::MainStatType::STR;
+            if (value == "DEX") return mcc::MainStatType::DEX;
+            if (value == "INT") return mcc::MainStatType::INT;
+            if (value == "LUK") return mcc::MainStatType::LUK;
+            if (value == "LUK_SECONDARY") return mcc::MainStatType::LUK_SECONDARY;
+            if (value == "ALL") return mcc::MainStatType::ALL_XENON;
+            if (value == "HP") return mcc::MainStatType::HP_DEMON_AVENGER;
             try {
-                return node.as<int>();
+                return static_cast<mcc::MainStatType>(node.as<int>());
             } catch (...) {
             }
         }
     }
 
-    std::vector<std::pair<double, int>> stat_types = {
-        {stat.str(), 1},
-        {stat.dex(), 2},
-        {stat.int_(), 3},
-        {stat.luk(), 4},
+    std::vector<std::pair<double, mcc::MainStatType>> stat_types = {
+        {stat.str(), mcc::MainStatType::STR},
+        {stat.dex(), mcc::MainStatType::DEX},
+        {stat.int_(), mcc::MainStatType::INT},
+        {stat.luk(), mcc::MainStatType::LUK},
     };
     return std::max_element(stat_types.begin(), stat_types.end())->second;
 }
@@ -131,7 +137,9 @@ double parse_weapon_constant(const YAML::Node& node) {
 
 } // namespace
 
-bool LogLoader::load(const std::string& filepath, maple_combat_calculator::shared::CombatLog& combat_log) {
+bool LogLoader::load(
+    const std::string& filepath, maple_combat_calculator::shared::CombatLog& combat_log
+) {
     std::ifstream input(filepath, std::ios::binary);
     if (!input) {
         std::cerr << "Error: Cannot open file " << filepath << std::endl;
@@ -195,7 +203,7 @@ bool LogLoader::load_nexon_json_from_string(
             si.name = s_node["name"].as<std::string>();
             si.type = s_node["type"].as<std::string>();
             if (s_node["duration"]) si.duration = s_node["duration"].as<double>();
-            
+
             if (s_node["actions"]) {
                 for (auto a_node : s_node["actions"]) {
                     SkillInfo::Action a;
@@ -234,9 +242,10 @@ bool LogLoader::load_nexon_json_from_string(
                 if (s_node["hexa_upgrade"]["growth"]) {
                     // slope/intercept 기반 계산은 생략하고 일단 intercept 사용
                     if (s_node["hexa_upgrade"]["growth"]["intercept"]) {
-                        double base_dmg = s_node["hexa_upgrade"]["growth"]["intercept"].as<double>();
+                        double base_dmg =
+                            s_node["hexa_upgrade"]["growth"]["intercept"].as<double>();
                         if (!skill_db[h_name].actions.empty()) {
-                             skill_db[h_name].actions[0].damage = base_dmg;
+                            skill_db[h_name].actions[0].damage = base_dmg;
                         }
                     }
                 }
@@ -267,7 +276,8 @@ bool LogLoader::load_nexon_json_from_string(
             else if (name == "크리티컬 확률") mcc_stat->set_critical_chance(val);
             else if (name == "크리티컬 데미지") mcc_stat->set_critical_damage(val);
             else if (name == "무기 숙련도") mcc_stat->set_mastery(val);
-        } catch (...) {}
+        } catch (...) {
+        }
     }
 
     const YAML::Node metadata = skill_root ? skill_root["metadata"] : YAML::Node();
@@ -275,7 +285,9 @@ bool LogLoader::load_nexon_json_from_string(
     const YAML::Node base_specs = skill_root ? skill_root["base_specs"] : YAML::Node();
     const YAML::Node weapon = base_specs ? base_specs["weapon"] : YAML::Node();
     const YAML::Node weapon_constant = weapon ? weapon["constant"] : YAML::Node();
-    mcc_char_info->set_main_stat_type(parse_main_stat_type(main_stat_type, *mcc_stat));
+    mcc_char_info->set_main_stat_type(static_cast<maple_combat_calculator::shared::MainStatType>(
+        parse_main_stat_type(main_stat_type, *mcc_stat)
+    ));
     mcc_char_info->set_weapon_constant(parse_weapon_constant(weapon_constant));
 
     auto* mcc_mob_info = combat_log.mutable_monster_info();
@@ -285,13 +297,21 @@ bool LogLoader::load_nexon_json_from_string(
         mcc_mob_info->set_name(mob_node["name"].as<std::string>("Standard Boss"));
         mcc_mob_info->set_level(mob_node["level"].as<int>(285));
         mcc_mob_info->set_defense_rate(mob_node["defense_rate"].as<double>(300.0));
-        mcc_mob_info->set_elemental_resistance(mob_node["elemental_resistance"].as<double>(0.5));
+        mcc_mob_info->set_elemental_resistance(mob_node["elemental_resistance"].as<double>(50.0));
         mcc_mob_info->set_is_boss(mob_node["is_boss"].as<bool>(true));
 
         if (mob_node["requirements"]) {
-            std::string f_type = mob_node["requirements"]["force_type"].as<std::string>("NONE");
+            std::string f_type_str = mob_node["requirements"]["force_type"].as<std::string>("NONE");
             int f_val = mob_node["requirements"]["force_value"].as<int>(0);
-            mcc_mob_info->set_force_type(f_type);
+
+            mcc::ForceType f_type = mcc::ForceType::NONE;
+            if (f_type_str == "ARCANE") f_type = mcc::ForceType::ARCANE;
+            else if (f_type_str == "AUTHENTIC") f_type = mcc::ForceType::AUTHENTIC;
+            else if (f_type_str == "STAR") f_type = mcc::ForceType::STARFORCE;
+
+            mcc_mob_info->set_force_type(
+                static_cast<maple_combat_calculator::shared::ForceType>(f_type)
+            );
             mcc_mob_info->set_required_force(f_val);
         }
     } catch (...) {
@@ -299,8 +319,9 @@ bool LogLoader::load_nexon_json_from_string(
         mcc_mob_info->set_name("Practice Dummy");
         mcc_mob_info->set_level(260);
         mcc_mob_info->set_defense_rate(300.0);
-        mcc_mob_info->set_elemental_resistance(0.5);
+        mcc_mob_info->set_elemental_resistance(50.0);
         mcc_mob_info->set_is_boss(true);
+        mcc_mob_info->set_force_type(maple_combat_calculator::shared::NONE_FORCE);
     }
 
     // 3. 타임라인 이벤트 생성 및 정렬
@@ -313,7 +334,7 @@ bool LogLoader::load_nexon_json_from_string(
     for (const auto& entry : timeline.skill_timeline()) {
         double start_time = entry.elapse_time() / 1000.0;
         auto it = skill_db.find(entry.skill_name());
-        
+
         if (it != skill_db.end()) {
             const auto& si = it->second;
             if (si.type == "attack" || si.type == "origin" || si.type == "summon") {
@@ -388,4 +409,4 @@ bool LogLoader::load_nexon_json_from_string(
     return true;
 }
 
-}
+} // namespace mcm

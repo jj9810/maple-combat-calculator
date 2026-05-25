@@ -1,14 +1,13 @@
 #include "mcm/inc/connector.h"
+
 #include "mcc/inc/skill_damage.h"
-#include "mcc/inc/combat_power.h"
-#include <algorithm>
-#include <cmath>
+
+#include <string>
 
 namespace mcm {
 
 long long MCMConnector::calculate_damage(
-    const SimulationContext& context,
-    const maple_combat_calculator::shared::Event& event
+    const SimulationContext& context, const maple_combat_calculator::shared::Event& event
 ) {
     auto total_stat = context.get_current_total_stat();
     const auto& char_info = context.get_char_info();
@@ -18,15 +17,12 @@ long long MCMConnector::calculate_damage(
     double mastery = total_stat.mastery();
 
     // 포스 타입 매핑
-    ForceType force_type = ForceType::NONE;
-    if (mob_info.force_type() == "ARCANE") force_type = ForceType::ARCANE;
-    else if (mob_info.force_type() == "AUTHENTIC") force_type = ForceType::AUTHENTIC;
-    else if (mob_info.force_type() == "STAR") force_type = ForceType::STARFORCE;
+    mcc::ForceType force_type = static_cast<mcc::ForceType>(mob_info.force_type());
 
-    return calcSkillDamage(
+    return mcc::calcSkillDamage(
         skill_damage_percent,
         total_stat,
-        char_info.main_stat_type(),
+        static_cast<mcc::MainStatType>(char_info.main_stat_type()),
         mastery,
         mob_info.defense_rate(),
         mob_info.elemental_resistance(),
@@ -39,23 +35,19 @@ long long MCMConnector::calculate_damage(
 }
 
 long long MCMConnector::calculate_dot_damage(
-    const SimulationContext& context,
-    const maple_combat_calculator::shared::Event& event
+    const SimulationContext& context, const maple_combat_calculator::shared::Event& event
 ) {
     auto total_stat = context.get_current_total_stat();
     const auto& char_info = context.get_char_info();
     const auto& mob_info = context.get_mob_info();
 
     // 포스 타입 매핑
-    ForceType force_type = ForceType::NONE;
-    if (mob_info.force_type() == "ARCANE") force_type = ForceType::ARCANE;
-    else if (mob_info.force_type() == "AUTHENTIC") force_type = ForceType::AUTHENTIC;
-    else if (mob_info.force_type() == "STAR") force_type = ForceType::STARFORCE;
+    mcc::ForceType force_type = static_cast<mcc::ForceType>(mob_info.force_type());
 
-    return calcDotDamage(
+    return mcc::calcDotDamage(
         event.damage(),
         total_stat,
-        char_info.main_stat_type(),
+        static_cast<mcc::MainStatType>(char_info.main_stat_type()),
         mob_info.elemental_resistance(),
         char_info.weapon_constant(),
         char_info.level(),
@@ -65,9 +57,7 @@ long long MCMConnector::calculate_dot_damage(
     );
 }
 
-InternalStat MCMConnector::parse_stat_from_payload(
-    const google::protobuf::Struct& payload
-) {
+InternalStat MCMConnector::parse_stat_from_payload(const google::protobuf::Struct& payload) {
     InternalStat stat;
     const auto& fields = payload.fields();
 
@@ -107,4 +97,4 @@ InternalStat MCMConnector::parse_stat_from_payload(
     return stat;
 }
 
-}
+} // namespace mcm

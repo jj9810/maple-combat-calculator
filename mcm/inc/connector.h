@@ -2,7 +2,8 @@
 
 #include "context.h"
 #include "internal/combat_log.pb.h"
-#include <string>
+
+#include <google/protobuf/struct.pb.h>
 
 namespace mcm {
 
@@ -16,24 +17,20 @@ public:
      * DAMAGE 이벤트를 기반으로 최종 데미지를 산출합니다.
      */
     static long long calculate_damage(
-        const SimulationContext& context,
-        const maple_combat_calculator::shared::Event& event
+        const SimulationContext& context, const maple_combat_calculator::shared::Event& event
     );
 
     /**
      * DOT 이벤트를 기반으로 도트 데미지를 산출합니다.
      */
     static long long calculate_dot_damage(
-        const SimulationContext& context,
-        const maple_combat_calculator::shared::Event& event
+        const SimulationContext& context, const maple_combat_calculator::shared::Event& event
     );
 
     /**
      * @brief Protobuf Struct 형태의 페이로드를 InternalStat 구조체로 파싱합니다.
      */
-    static InternalStat parse_stat_from_payload(
-        const google::protobuf::Struct& payload
-    );
+    static InternalStat parse_stat_from_payload(const google::protobuf::Struct& payload);
 };
 
-}
+} // namespace mcm

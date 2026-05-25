@@ -1,6 +1,6 @@
 # Maple Combat Calculator Wrapper Makefile
 
-.PHONY: all build wasm clean test rebuild help
+.PHONY: all build wasm clean test rebuild style help
 
 BUILD_DIR := build
 WASM_BUILD_DIR := build-wasm
@@ -72,6 +72,12 @@ test:
 # 완전히 새로 빌드
 rebuild: clean build
 
+# 코드 포맷팅 (clang-format 적용)
+style:
+	@echo "--- Formatting Code with clang-format ---"
+	@find mcc mcm nexon_api shared -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -not -path '*/.*' | xargs -r clang-format -i
+	@echo "Formatting complete."
+
 # 도움말
 help:
 	@echo "Available commands:"
@@ -81,4 +87,5 @@ help:
 	@echo "  make clean   : Remove all build directories"
 	@echo "  make test    : Run native tests"
 	@echo "  make rebuild : Clean and then build native"
+	@echo "  make style   : Auto-format C++ code using clang-format"
 	@echo "  make help    : Show this message"

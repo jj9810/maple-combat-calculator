@@ -2,6 +2,24 @@ syntax = "proto3";
 
 package maple_combat_calculator.shared;
 
+enum ForceType {
+    NONE_FORCE = 0;
+    STARFORCE = 1;
+    ARCANE = 2;
+    AUTHENTIC = 3;
+}
+
+enum MainStatType {
+    NONE_STAT = 0;
+    STR = 1;
+    DEX = 2;
+    INT = 3;
+    LUK = 4;
+    LUK_DUAL_BLADE = 5;
+    ALL_XENON = 6;
+    HP_DEMON_AVENGER = 7;
+}
+
 // MCCStat 메시지는 모든 보정치가 계산 완료된 최종 스탯 정보를 담습니다.
 // MCM에서 최종 합산된 후 MCC의 연산 함수로 전달됩니다.
 message MCCStat {

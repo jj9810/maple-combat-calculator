@@ -1,10 +1,11 @@
 #pragma once
 
-#include "context.h"
 #include "aggregator.h"
+#include "context.h"
 #include "internal/combat_log.pb.h"
-#include <string>
+
 #include <memory>
+#include <string>
 
 namespace mcm {
 
@@ -15,7 +16,9 @@ public:
     void run();
     void print_report();
 
-    const DamageAggregator& get_aggregator() const { return aggregator_; }
+    const DamageAggregator& get_aggregator() const {
+        return aggregator_;
+    }
 
 private:
     void process_operation(const maple_combat_calculator::shared::OperationLog& op_log);
@@ -32,4 +35,4 @@ private:
     maple_combat_calculator::shared::CombatLog combat_log_;
 };
 
-}
+} // namespace mcm
