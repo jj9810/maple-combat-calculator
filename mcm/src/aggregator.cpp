@@ -1,9 +1,10 @@
 #include "mcm/inc/aggregator.h"
-#include <iostream>
-#include <iomanip>
-#include <numeric>
-#include <vector>
+
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <utility>
+#include <vector>
 
 namespace mcm {
 
@@ -12,7 +13,9 @@ void DamageAggregator::set_combat_time(double start, double end) {
     end_time_ = end;
 }
 
-void DamageAggregator::record_damage(double timestamp, const std::string& skill_name, long long damage, long long hit_count) {
+void DamageAggregator::record_damage(
+    double timestamp, const std::string& skill_name, long long damage, long long hit_count
+) {
     total_damage_ += damage * hit_count;
 
     auto& record = skill_records_[skill_name];
@@ -42,20 +45,20 @@ void DamageAggregator::print_report() const {
     std::cout << "Skill Breakdown:\n";
 
     // 점유율 계산을 위해 정렬
-    std::vector<std::pair<std::string, SkillRecord>> sorted_records(skill_records_.begin(), skill_records_.end());
-    std::sort(sorted_records.begin(), sorted_records.end(),
-        [](const auto& a, const auto& b) {
-            return a.second.total_damage > b.second.total_damage;
-        });
+    std::vector<std::pair<std::string, SkillRecord>> sorted_records(
+        skill_records_.begin(), skill_records_.end()
+    );
+    std::sort(sorted_records.begin(), sorted_records.end(), [](const auto& a, const auto& b) {
+        return a.second.total_damage > b.second.total_damage;
+    });
 
     for (const auto& pair : sorted_records) {
         const auto& record = pair.second;
         double percentage = (static_cast<double>(record.total_damage) / total_damage_) * 100.0;
-        std::cout << std::setw(20) << std::left << record.name
-                  << std::setw(15) << std::right << record.total_damage
-                  << " (" << percentage << "%)\n";
+        std::cout << std::setw(20) << std::left << record.name << std::setw(15) << std::right
+                  << record.total_damage << " (" << percentage << "%)\n";
     }
     std::cout << "========================================\n";
 }
 
-}
+} // namespace mcm

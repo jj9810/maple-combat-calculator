@@ -1,9 +1,9 @@
-#include <emscripten/bind.h>
-#include "mcm/inc/mcm.h"
 #include "mcm/inc/loader.h"
-#include <string>
+#include "mcm/inc/mcm.h"
+
+#include <emscripten/bind.h>
 #include <sstream>
-#include <iomanip>
+#include <string>
 
 using namespace emscripten;
 

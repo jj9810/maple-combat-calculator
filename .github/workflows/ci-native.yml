@@ -1,0 +1,43 @@
+name: Native CI (C++ Build & Test)
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  native-build:
+    name: Native Build (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Cache vcpkg
+        uses: actions/cache@v3
+        with:
+          path: |
+            build/vcpkg_installed
+            ~/.cache/vcpkg
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential curl zip unzip tar pkg-config clang-tidy
+
+      - name: Configure CMake with clang-tidy
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake \
+            -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
+
+      - name: Build Native
+        run: cmake --build build --parallel
+
+      - name: Run Tests
+        run: make test

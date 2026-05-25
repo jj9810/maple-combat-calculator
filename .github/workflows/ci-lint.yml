@@ -1,0 +1,23 @@
+name: Code Linting
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-style:
+    name: Code Style Check (clang-format)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      - name: Run clang-format Check
+        run: |
+          find mcc mcm nexon_api shared -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -not -path '*/.*' | xargs clang-format --dry-run --Werror

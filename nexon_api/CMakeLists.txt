@@ -32,9 +32,16 @@ foreach(PROTO_FILE ${PROTO_FILES})
     set(GEN_SRC "${PROTO_GEN_DIR}/${PROTO_REL_PATH}/${PROTO_NAME}.pb.cc")
     set(GEN_HDR "${PROTO_GEN_DIR}/${PROTO_REL_PATH}/${PROTO_NAME}.pb.h")
     
+    # CMake Configure(리로드) 시점에 파일을 강제 생성하여 CLion 빨간줄 방지 및 인덱싱 자동화
+    if(Protobuf_PROTOC_EXECUTABLE)
+        execute_process(
+            COMMAND ${Protobuf_PROTOC_EXECUTABLE} "--cpp_out=${PROTO_GEN_DIR}" "-I${PROTO_DIR}" "${PROTO_FILE}"
+        )
+    endif()
+    
     add_custom_command(
         OUTPUT "${GEN_SRC}" "${GEN_HDR}"
-        COMMAND ${Protobuf_PROTOC_EXECUTABLE}
+        COMMAND protobuf::protoc
         ARGS "--cpp_out=${PROTO_GEN_DIR}" "-I${PROTO_DIR}" "${PROTO_FILE}"
         DEPENDS "${PROTO_FILE}"
         COMMENT "Running C++ protocol buffer compiler on ${PROTO_FILE}"

@@ -1,0 +1,43 @@
+---
+# Language and standard options
+Language: Cpp
+Standard: Latest
+
+# Indentation and spacing options
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+NamespaceIndentation: None
+AccessModifierOffset: -4
+
+# Alignment and pointer options
+AlignAfterOpenBracket: BlockIndent
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# Wrapping and line break options
+ColumnLimit: 100
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Attach
+
+# Short statement and brace options
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+InsertBraces: false
+
+# Spacing around tokens and brackets
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesInContainerLiterals: false
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+
+# Header inclusion and sorting options
+IncludeBlocks: Regroup
+SortIncludes: CaseSensitive
+...

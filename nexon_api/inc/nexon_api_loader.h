@@ -1,14 +1,12 @@
 #pragma once
 
-#include "nexon/skill_timeline.pb.h"
 #include "nexon/battle_practice_character_info.pb.h"
 #include "nexon/battle_practice_result.pb.h"
-#include "nexon/replay_id.pb.h"
+#include "nexon/skill_timeline.pb.h"
 
-#include <string>
-#include <vector>
-#include <optional>
 #include <google/protobuf/util/json_util.h>
+#include <optional>
+#include <string>
 
 namespace nexon_api {
 
@@ -33,19 +31,19 @@ public:
     /**
      * @brief 특정 전투의 최종 결과를 가져옵니다.
      */
-    std::optional<maple_combat_calculator::shared::BattlePracticeResult> 
+    std::optional<maple_combat_calculator::shared::BattlePracticeResult>
     get_battle_result(const std::string& replay_id);
 
     /**
      * @brief 특정 전투의 스킬 사용 타임라인 기록을 가져옵니다.
      */
-    std::optional<maple_combat_calculator::shared::SkillTimeline> 
+    std::optional<maple_combat_calculator::shared::SkillTimeline>
     get_skill_timeline(const std::string& replay_id, int page_no = 1);
 
     /**
      * @brief 특정 전투 시점의 캐릭터 상세 스탯 및 장비 정보를 가져옵니다.
      */
-    std::optional<maple_combat_calculator::shared::BattlePracticeCharacterInfo> 
+    std::optional<maple_combat_calculator::shared::BattlePracticeCharacterInfo>
     get_character_info(const std::string& replay_id);
 
     /**
@@ -70,4 +68,4 @@ private:
     const std::string base_url_ = "https://open.api.nexon.com/maplestory/v1/battle-practice/";
 };
 
-}
+} // namespace nexon_api

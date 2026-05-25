@@ -1,0 +1,37 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-avoid-const-params-in-decls,
+  readability-braces-around-statements,
+  readability-const-return-type,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-deleted-default,
+  readability-else-after-return,
+  readability-function-size,
+  readability-implicit-bool-conversion,
+  readability-inconsistent-declaration-parameter-name,
+  readability-misleading-indentation,
+  readability-redundant-control-flow,
+  readability-redundant-declaration,
+  readability-redundant-function-ptr-dereference,
+  readability-redundant-member-init,
+  readability-redundant-smartptr-get,
+  readability-redundant-string-cstr,
+  readability-redundant-string-init,
+  readability-simplify-boolean-expr,
+  readability-simplify-subscript-expr,
+  readability-static-definition-in-anonymous-namespace,
+  readability-uniqueptr-delete-release,
+  readability-use-anyofallof
+
+WarningsAsErrors: 'bugprone-*,performance-*'
+HeaderFilterRegex: '^(mcc|mcm|nexon_api|shared)/.*'
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+...

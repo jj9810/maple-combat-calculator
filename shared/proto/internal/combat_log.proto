@@ -42,7 +42,7 @@ message OperationLog {
 // CharacterInfo는 시뮬레이션에 필요한 캐릭터의 핵심 정보입니다.
 message CharacterInfo {
     int32 level = 1;
-    int32 main_stat_type = 2; // 1:STR, 2:DEX, 3:INT, 4:LUK, 5:LUK(DB), 6:ALL(Xenon), 7:HP(DA)
+    MainStatType main_stat_type = 2;
     double weapon_constant = 3;
 }
 
@@ -75,6 +75,6 @@ message MonsterInfo {
     bool is_boss = 4;
     double elemental_resistance = 7;
 
-    string force_type = 8; // NONE, ARCANE, AUTHENTIC, STAR
+    ForceType force_type = 8;
     int32 required_force = 9;
 }
