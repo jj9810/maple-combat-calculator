@@ -1,6 +1,7 @@
 #include "mcm/inc/context.h"
 
 #include "mcc/inc/utils.h"
+
 #include <cmath>
 
 namespace mcm {
@@ -32,7 +33,7 @@ void InternalStat::add(const InternalStat& other) {
     final_damage =
         100.0 * (mcc::to_multiplier(final_damage) * mcc::to_multiplier(other.final_damage) - 1.0);
     ignore_defense = 100.0 * (1.0 - mcc::to_complement_multiplier(ignore_defense) *
-                                         mcc::to_complement_multiplier(other.ignore_defense));
+                                        mcc::to_complement_multiplier(other.ignore_defense));
 }
 
 SimulationContext::SimulationContext(
@@ -92,8 +93,11 @@ maple_combat_calculator::shared::MCCStat SimulationContext::get_current_total_st
     result.set_hp(std::floor(internal.hp_fixed * mcc::to_multiplier(internal.hp_percent)));
     result.set_mp(std::floor(internal.mp_fixed * mcc::to_multiplier(internal.mp_percent)));
 
-    result.set_attack_power(std::floor(internal.att_fixed * mcc::to_multiplier(internal.att_percent)));
-    result.set_magic_power(std::floor(internal.mag_fixed * mcc::to_multiplier(internal.mag_percent)));
+    result.set_attack_power(
+        std::floor(internal.att_fixed * mcc::to_multiplier(internal.att_percent))
+    );
+    result.set_magic_power(std::floor(internal.mag_fixed * mcc::to_multiplier(internal.mag_percent))
+    );
 
     result.set_damage(internal.damage);
     result.set_boss_damage(internal.boss_damage);
