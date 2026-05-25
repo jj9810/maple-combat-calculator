@@ -1,4 +1,4 @@
-name: C++ CI (Native & WASM)
+name: Native CI (C++ Build & Test)
 
 on:
   push:
@@ -41,38 +41,3 @@ jobs:
 
       - name: Run Tests
         run: make test
-
-  wasm-build:
-    name: WebAssembly Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v14
-        with:
-          version: 'latest'
-
-      - name: Cache vcpkg WASM
-        uses: actions/cache@v3
-        with:
-          path: |
-            build-wasm/vcpkg_installed
-            ~/.cache/vcpkg
-          key: ${{ runner.os }}-vcpkg-wasm-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-wasm-
-
-      - name: Build WASM
-        run: make wasm EMSDK_DIR=$EMSDK VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT
-
-      - name: Upload WASM Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: mcm-wasm-build
-          path: |
-            build-wasm/mcm/mcm_web.js
-            build-wasm/mcm/mcm_web.wasm
-            build-wasm/mcm/mcm_web.data
