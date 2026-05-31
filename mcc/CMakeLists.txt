@@ -64,6 +64,20 @@ target_include_directories(mcc PUBLIC
 target_link_libraries(mcc PUBLIC protobuf::libprotobuf Boost::multiprecision)
 
 # 테스트 실행 파일 정의
-add_executable(mcc_test test/mcc_test.cpp)
-target_link_libraries(mcc_test PRIVATE mcc)
-add_test(NAME mcc_test COMMAND mcc_test)
+function(add_mcc_unit_test target source labels)
+    add_executable(${target} ${source})
+    target_link_libraries(${target} PRIVATE mcc)
+    add_test(NAME ${target} COMMAND ${target})
+    set_tests_properties(${target} PROPERTIES LABELS "${labels}")
+endfunction()
+
+add_mcc_unit_test(mcc_combat_power_test test/combat_power_test.cpp "mcc;combat_power")
+add_mcc_unit_test(mcc_skill_damage_test test/skill_damage_test.cpp "mcc;skill_damage")
+add_mcc_unit_test(
+    mcc_max_damage_correction_test
+    test/max_damage_correction_test.cpp
+    "mcc;max_damage_correction"
+)
+add_mcc_unit_test(mcc_ground_truth_test test/ground_truth_test.cpp "mcc;ground_truth")
+add_mcc_unit_test(mcc_edge_case_test test/edge_case_test.cpp "mcc;edge_cases")
+add_mcc_unit_test(mcc_invalid_input_policy_test test/invalid_input_policy_test.cpp "mcc;invalid_input_policy")
