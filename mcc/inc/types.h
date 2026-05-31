@@ -7,6 +7,14 @@ namespace mcc {
 
 #define MAX_DAMAGE_CAP true
 
+#ifndef MCC_ENABLE_XENON_SUPPORT
+#define MCC_ENABLE_XENON_SUPPORT 1
+#endif
+
+#ifndef MCC_ENABLE_DEMON_AVENGER_SUPPORT
+#define MCC_ENABLE_DEMON_AVENGER_SUPPORT 1
+#endif
+
 // Constants
 constexpr double BASE_RATIO = 0.01;
 constexpr int BASE_CRIT_CONSTANT = 35;

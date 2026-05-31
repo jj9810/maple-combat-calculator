@@ -9,6 +9,10 @@
 #include "skill_damage_raw.h"
 #include "utils.h"
 
+#if MCC_ENABLE_XENON_SUPPORT
+#include "xenon_support.h"
+#endif
+
 #include <algorithm>
 
 namespace mcc {
@@ -28,6 +32,10 @@ long long calcSkillDamage(
 ) {
     // StatType 로직을 사용하여 필요한 스탯을 매핑합니다.
     MappedStats mapped = map_stat_type(stat, mainStatType);
+    double finalDamagePercent = stat.final_damage();
+#if MCC_ENABLE_XENON_SUPPORT
+    finalDamagePercent = apply_xenon_final_damage_multiplier(finalDamagePercent, mainStatType);
+#endif
 
     double levelAdjust = get_level_adjust(charLevel, mobLevel);
     int myForce = get_force_value(stat, forceType);
@@ -42,7 +50,7 @@ long long calcSkillDamage(
         mapped.attackOrMagic,
         mastery,
         stat.damage() + stat.boss_damage(), // 데미지 + 보공 합산
-        stat.final_damage(),
+        finalDamagePercent,
         stat.critical_chance(),
         stat.critical_damage(),
         stat.ignore_defense(),              // MCM에서 이미 합산된 값을 사용
@@ -71,6 +79,10 @@ long long calcDotDamage(
     double levelAdjust = get_level_adjust(charLevel, mobLevel);
     int myForce = get_force_value(stat, forceType);
     double forceAdjust = get_force_adjust(forceType, myForce, reqForce);
+    double finalDamagePercent = 0.0;
+#if MCC_ENABLE_XENON_SUPPORT
+    finalDamagePercent = xenon_dot_final_damage_percent(mainStatType);     // TODO: 제논 직업상수 적용여부 확인
+#endif
 
     // DOT 데미지 특성 (인벤 실험 참고: https://www.inven.co.kr/board/maple/2304/24096)
     return calc_skill_damage_raw(
@@ -80,7 +92,7 @@ long long calcDotDamage(
         mapped.attackOrMagic,
         100.0, // mastery: 도트딜은 숙련도 100% (고정 데미지)
         0.0,   // damagePercent: 미적용
-        0.0,   // finalDamagePercent: 미적용
+        finalDamagePercent,
         0.0,   // critRate: 크리티컬 미적용
         0.0,   // critDamagePercent: 크리티컬 데미지 미적용
         0.0,   // ignoreDefense: 방무 미적용

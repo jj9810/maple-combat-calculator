@@ -4,6 +4,10 @@
 #include "internal/mcc_stat.pb.h"
 #include "utils.h"
 
+#if MCC_ENABLE_XENON_SUPPORT
+#include "xenon_support.h"
+#endif
+
 namespace mcc {
 
 int calculateCombatPower(
@@ -19,6 +23,10 @@ int calculateCombatPower(
 ) {
     // StatType 로직을 별개 함수로 분리하여 사용합니다.
     MappedStats mapped = map_stat_type(stat, mainStatType);
+    double finalDamagePercent = stat.final_damage();
+#if MCC_ENABLE_XENON_SUPPORT
+    finalDamagePercent = apply_xenon_final_damage_multiplier(finalDamagePercent, mainStatType);
+#endif
 
     // 무기 및 기본 제공(innate) 정보를 모두 외부에서 받아 기존 함수로 전달합니다.
     return calculate_combat_power_raw(
@@ -35,7 +43,7 @@ int calculateCombatPower(
         innateBossDmgPercent,
         stat.damage(),
         innateDmgPercent,
-        stat.final_damage(),
+        finalDamagePercent,
         innateFinalDmgPercent
     );
 }

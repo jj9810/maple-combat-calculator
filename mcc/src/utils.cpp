@@ -1,6 +1,12 @@
 #include "utils.h"
 
+#if MCC_ENABLE_DEMON_AVENGER_SUPPORT
+#include "demon_avenger_support.h"
+#endif
 #include "internal/mcc_stat.pb.h"
+#if MCC_ENABLE_XENON_SUPPORT
+#include "xenon_support.h"
+#endif
 
 #include <algorithm>
 
@@ -37,14 +43,18 @@ map_stat_type(const maple_combat_calculator::shared::MCCStat& stat, MainStatType
         mapped.attackOrMagic = stat.attack_power();
         break;
     case MainStatType::ALL_XENON: // ALL (Xenon)
-        mapped.mainStat = stat.str() + stat.dex() + stat.luk();
-        mapped.subStat = 0;
-        mapped.attackOrMagic = stat.attack_power();
+#if MCC_ENABLE_XENON_SUPPORT
+        if (is_xenon(mainStatType)) {
+            mapped = map_xenon_stats(stat);
+        }
+#endif
         break;
-    case MainStatType::HP_DEMON_AVENGER:   // HP (Demon Avenger)
-        mapped.mainStat = stat.hp() / 3.5; // HP 캐릭 보정 계수
-        mapped.subStat = stat.str();
-        mapped.attackOrMagic = stat.attack_power();
+    case MainStatType::HP_DEMON_AVENGER: // HP (Demon Avenger)
+#if MCC_ENABLE_DEMON_AVENGER_SUPPORT
+        if (is_demon_avenger(mainStatType)) {
+            mapped = map_demon_avenger_stats(stat);
+        }
+#endif
         break;
     default:
         // 알 수 없는 타입의 경우 가장 높은 수치를 사용하도록 예외 처리

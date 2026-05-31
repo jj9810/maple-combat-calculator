@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(mcc)
 
+option(MCC_ENABLE_XENON_SUPPORT "Enable Xenon special stat support" ON)
+option(MCC_ENABLE_DEMON_AVENGER_SUPPORT "Enable Demon Avenger special stat support" ON)
+
 # Protobuf 라이브러리 찾기
 find_package(Protobuf REQUIRED)
 
@@ -40,6 +43,8 @@ add_library(mcc STATIC
     inc/skill_damage.h
     inc/skill_damage_raw.h
     inc/max_damage_correction.h
+    inc/xenon_support.h
+    inc/demon_avenger_support.h
     inc/adjustments.h
     inc/utils.h
     inc/types.h
@@ -59,6 +64,18 @@ target_include_directories(mcc PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
+
+if(MCC_ENABLE_XENON_SUPPORT)
+    target_compile_definitions(mcc PUBLIC MCC_ENABLE_XENON_SUPPORT=1)
+else()
+    target_compile_definitions(mcc PUBLIC MCC_ENABLE_XENON_SUPPORT=0)
+endif()
+
+if(MCC_ENABLE_DEMON_AVENGER_SUPPORT)
+    target_compile_definitions(mcc PUBLIC MCC_ENABLE_DEMON_AVENGER_SUPPORT=1)
+else()
+    target_compile_definitions(mcc PUBLIC MCC_ENABLE_DEMON_AVENGER_SUPPORT=0)
+endif()
 
 # Protobuf 및 Boost 라이브러리 연결
 target_link_libraries(mcc PUBLIC protobuf::libprotobuf Boost::multiprecision)
@@ -81,3 +98,9 @@ add_mcc_unit_test(
 add_mcc_unit_test(mcc_ground_truth_test test/ground_truth_test.cpp "mcc;ground_truth")
 add_mcc_unit_test(mcc_edge_case_test test/edge_case_test.cpp "mcc;edge_cases")
 add_mcc_unit_test(mcc_invalid_input_policy_test test/invalid_input_policy_test.cpp "mcc;invalid_input_policy")
+if(MCC_ENABLE_XENON_SUPPORT)
+    add_mcc_unit_test(mcc_xenon_special_stat_test test/xenon_special_stat_test.cpp "mcc;xenon")
+endif()
+if(MCC_ENABLE_DEMON_AVENGER_SUPPORT)
+    add_mcc_unit_test(mcc_demon_avenger_special_stat_test test/demon_avenger_special_stat_test.cpp "mcc;demon_avenger")
+endif()
