@@ -1,6 +1,6 @@
 #include "adjustments.h"
-#include "common.h"
 #include "combat_power_raw.h"
+#include "common.h"
 #include "skill_damage_raw.h"
 #include "types.h"
 
@@ -88,21 +88,7 @@ void test_adjustment_invalid_input_policy() {
 
 void test_combat_power_raw_requires_nonzero_weapon_base_attack() {
     int combatPower = calculate_combat_power_raw(
-        10000.0,
-        2000.0,
-        1000.0,
-        500,
-        100,
-        600,
-        0.0,
-        35.0,
-        35.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
+        10000.0, 2000.0, 1000.0, 500, 100, 600, 0.0, 35.0, 35.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     );
 
     mcc_test::expect_eq("valid combat power policy baseline", combatPower, 634473);

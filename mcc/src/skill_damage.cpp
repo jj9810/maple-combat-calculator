@@ -81,7 +81,8 @@ long long calcDotDamage(
     double forceAdjust = get_force_adjust(forceType, myForce, reqForce);
     double finalDamagePercent = 0.0;
 #if MCC_ENABLE_XENON_SUPPORT
-    finalDamagePercent = xenon_dot_final_damage_percent(mainStatType);     // TODO: 제논 직업상수 적용여부 확인
+    finalDamagePercent =
+        xenon_dot_final_damage_percent(mainStatType); // TODO: 제논 직업상수 적용여부 확인
 #endif
 
     // DOT 데미지 특성 (인벤 실험 참고: https://www.inven.co.kr/board/maple/2304/24096)
@@ -93,9 +94,9 @@ long long calcDotDamage(
         100.0, // mastery: 도트딜은 숙련도 100% (고정 데미지)
         0.0,   // damagePercent: 미적용
         finalDamagePercent,
-        0.0,   // critRate: 크리티컬 미적용
-        0.0,   // critDamagePercent: 크리티컬 데미지 미적용
-        0.0,   // ignoreDefense: 방무 미적용
+        0.0,                                // critRate: 크리티컬 미적용
+        0.0,                                // critDamagePercent: 크리티컬 데미지 미적용
+        0.0,                                // ignoreDefense: 방무 미적용
         stat.elemental_resistance_ignore(), // elementalAdjust
         0.0,                                // mobDefense: 방어율 무시 (0으로 처리)
         mobElemRes,
